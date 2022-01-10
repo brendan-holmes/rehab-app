@@ -10,29 +10,28 @@ class Form extends React.Component {
     }
   
     handleSubmit(event) {
-      //alert('Input 1: ' + this.input1.current.value + '\n' + 'Input 2: ' + this.input2.current.value + '\n' );
-      const params = 
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      const raw = JSON.stringify(
       {
         "Item": {
             "id": {"S": "1"},
             "A": {"N": this.input1.current.value},
             "B": {"N": this.input2.current.value}
         }
-      }
+      });
       // fetch
-      const userAction = async () => {
-        const response = await fetch(this.submitUrl, {
-          method: 'POST',
-          body: params, // string or object
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        const myJson = await response.json(); //extract JSON from the http response
-        // do something with myJson
-        alert("API responded with: " + myJson)
-      }
-      userAction();
+      const requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+
+     fetch(this.submitUrl, requestOptions)
+        .then(response => response.text())
+        .then(result => alert('success', result))
+        .catch(error => alert('error', error));
       event.preventDefault();
     }
   
