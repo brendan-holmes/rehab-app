@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {list} from '../apiClient.js';
+import InfoCard from './InfoCard.js';
 
 const Info = (props) => {
   const [data, setData] = useState(null);
@@ -19,13 +20,16 @@ const Info = (props) => {
     if (data && data.Items && Array.isArray(data.Items)) {
       return (
         <ul>
-          {data.Items.map((item, index) => <li key={index}>{
-          JSON.stringify(item)
-            .replace(/{/g,'')
-            .replace(/}/g,'')
-            .replace(/"/g,'')
-            .replace(/,/g,', ')
-          }</li> )}
+          {data.Items.map((item, index) => {
+            const cardProps = {
+              A: item.A,
+              B: item.B,
+              id: item.id,
+              index: index,
+              key: index,
+              setIsListRefreshRequired: props.setIsListRefreshRequired
+            };
+            return <InfoCard {...cardProps}/>})}
         </ul>
       )
     }

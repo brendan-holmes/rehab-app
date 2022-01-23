@@ -1,18 +1,22 @@
 
 async function dynamoDbOperation(operation, payload = {}) {
-    if ((operation !== "list") &&
-    (operation !== "create")) {
+    if (
+        (operation !== 'list') &&
+        (operation !== 'create') &&
+        (operation !== 'delete')
+        ) {
+            console.log('Invalid dynamo operation.');
         return null;
     }
     
     var headers = new Headers();
-    headers.append("Content-Type", "application/json");
+    headers.append('Content-Type', 'application/json');
     
     const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
     var body = JSON.stringify({
-        "operation": operation,
-        "tableName": "rehab-app",
-        "payload": payload
+        'operation': operation,
+        'tableName': 'rehab-app',
+        'payload': payload
     });
 
     var requestOptions = {
@@ -32,11 +36,20 @@ async function dynamoDbOperation(operation, payload = {}) {
 }
 
 function put(data) {
-    return dynamoDbOperation("create", data);
+    return dynamoDbOperation('create', data);
 }
 
 function list() {
-    return dynamoDbOperation("list");
+    return dynamoDbOperation('list');
 }
 
-export {put, list};
+function remove(id) {
+    if (id) {
+        const payload = {
+            'Key': { 'id': id }
+        }
+        return dynamoDbOperation('delete', payload);    
+    }
+}
+
+export {put, list, remove};

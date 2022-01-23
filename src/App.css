@@ -40,3 +40,49 @@
 ul {
   list-style-type: none;
 }
+
+.info-card:hover {
+  /* background-color: rgb(243, 243, 243); */
+}
+
+li {
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+button {
+  background-color: white;
+  border-color: grey;
+  border-radius: 5px;
+  border-width: 1px;
+  padding: 10px;
+  font-size: medium;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.delete-button {
+  float: right;
+}
+
+.delete-button:hover {
+  cursor: pointer;
+}
+
+.info-card .delete-button {
+  visibility: hidden;
+}
+
+.info-card:hover .delete-button {
+  visibility: visible;
+}
+
+input {
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom-width: 1px;
+  border-color: lightgray;
+}

@@ -35,7 +35,7 @@ const Form = (props) => {
       <div><label>ID <input type='number' id='ID' value={inputs.ID} onChange={handleChange}/></label></div>
       <div><label>A <input type='number' id='A' value={inputs.A} onChange={handleChange}/></label></div>
       <div><label>B <input type='number' id='B' value={inputs.B} onChange={handleChange}/></label></div>
-      <div><button type='submit' value='Submit' onClick={handleSubmit}>Submit</button></div>
+      <div><button type='submit' onClick={handleSubmit}>Add</button></div>
     </form>
   );
 }
