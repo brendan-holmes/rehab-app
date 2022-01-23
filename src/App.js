@@ -1,11 +1,17 @@
 import './App.css';
+import React, { useState } from 'react';
 import Form from './components/Form.js';
+import Info from './components/Info.js';
 
 function App() {
+  const [isListRefreshRequired, setIsListRefreshRequired] = useState(true);
   return (
     <div className="App">
       <header className="App-header">
-        <Form submitUrl='https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta'/>
+        <h1>Rehab</h1>
+        <Form setIsListRefreshRequired={setIsListRefreshRequired}/>
+        <Info isListRefreshRequired={isListRefreshRequired}
+          setIsListRefreshRequired={setIsListRefreshRequired}/>
       </header>
     </div>
   );
