@@ -12,9 +12,9 @@ const InfoCard = (props) => {
         <div className='info-card'>
             <p className="delete-button" onClick={handleDeleteClick}>×</p>
             <li key={props.index}>
-                <h3>ID {props.id}</h3>
-                <p><strong>A</strong> {props.A}</p>
-                <p><strong>B</strong> {props.B}</p>
+                <p>{props.timeStamp}</p>
+                <p><strong>Field 1</strong> {props.A}</p>
+                <p><strong>Field 2</strong> {props.B}</p>
             </li> 
         </div>
     )

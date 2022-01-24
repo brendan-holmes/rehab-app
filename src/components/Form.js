@@ -3,7 +3,7 @@ import {put} from '../apiClient.js';
 
 const Form = (props) => {
   
-  const [inputs, setInputs] = useState({'ID': '', 'A': '', 'B': ''});
+  const [inputs, setInputs] = useState({'A': '', 'B': ''});
   
   const handleChange = (event) => {
     const key = event.target.id;
@@ -14,14 +14,8 @@ const Form = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setInputs({'ID': '', 'A': '', 'B': ''});
-    const data = {
-      'Item': {
-          'id': inputs.ID,
-          'A': inputs.A,
-          'B': inputs.B
-      }
-    };
+    setInputs({'A': '', 'B': ''});
+    const data = {'A': inputs.A, 'B': inputs.B};
     put(data)
       .then(result => {
         console.log('Success: ', result);
@@ -32,9 +26,8 @@ const Form = (props) => {
   
   return (
     <form>
-      <div><label>ID <input type='number' id='ID' value={inputs.ID} onChange={handleChange}/></label></div>
-      <div><label>A <input type='number' id='A' value={inputs.A} onChange={handleChange}/></label></div>
-      <div><label>B <input type='number' id='B' value={inputs.B} onChange={handleChange}/></label></div>
+      <div><label>Field 1 <input type='number' id='A' value={inputs.A} onChange={handleChange}/></label></div>
+      <div><label>Field 2 <input type='number' id='B' value={inputs.B} onChange={handleChange}/></label></div>
       <div><button type='submit' onClick={handleSubmit}>Add</button></div>
     </form>
   );

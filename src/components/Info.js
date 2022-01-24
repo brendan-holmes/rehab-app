@@ -9,7 +9,7 @@ const Info = (props) => {
     if (props.isListRefreshRequired) {
       list()
       .then(info => {
-        console.log(info);
+        // console.log(info);
         setData(info);
       });
       props.setIsListRefreshRequired(false);
@@ -22,9 +22,7 @@ const Info = (props) => {
         <ul>
           {data.Items.map((item, index) => {
             const cardProps = {
-              A: item.A,
-              B: item.B,
-              id: item.id,
+              ...item,
               index: index,
               key: index,
               setIsListRefreshRequired: props.setIsListRefreshRequired
