@@ -70,7 +70,9 @@ const Info = (props) => {
           addToast={props.addToast}
           addItem={PushItem}
         />
-      {content(data)}
+      <div className="info-content">
+        {content(data)}
+      </div>
     </div>
   );
 };

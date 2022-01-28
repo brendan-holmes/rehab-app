@@ -28,14 +28,14 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-      </header>
       <NavBar>
         <li>Rehab</li>
         <li className="small-text">Last updated: {formatDate(lastUpdated)}</li>
-        <li><button className="no-border" onClick={() => setIsListRefreshRequired(true)}>
-          <img className="navbar-refresh" src={refreshIcon} alt=""/>
-          </button></li>
+        <li>
+          <button className="no-border" onClick={() => setIsListRefreshRequired(true)}>
+            <img className="navbar-refresh" src={refreshIcon} alt=""/>
+          </button>
+        </li>
       </NavBar>
       
       <Info
