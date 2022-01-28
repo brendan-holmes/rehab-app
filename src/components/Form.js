@@ -38,9 +38,19 @@ const Form = (props) => {
   
   return (
     <form className="b-form">
-      <div><label>Field A <input type='number' id='A' value={inputs.A} onChange={handleChange}/></label></div>
-      <div><label>Field B <input type='number' id='B' value={inputs.B} onChange={handleChange}/></label></div>
-      <div><button type='submit' onClick={handleSubmit}>Add</button></div>
+      <div className="form-field">
+        <label>
+          Field A <input className="form-input" type='number' id='A' value={inputs.A} placeholder="Enter a number" onChange={handleChange}/>
+        </label>
+      </div>
+      <div>
+        <label>
+          Field B <input className="form-input" type='number' id='B' value={inputs.B} placeholder="Enter a number" onChange={handleChange}/>
+        </label>
+      </div>
+      <div className="form-field">
+        <button type='submit' onClick={handleSubmit}>Add</button>
+      </div>
     </form>
   );
 }
