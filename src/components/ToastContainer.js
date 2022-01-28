@@ -1,4 +1,3 @@
-import react from "react";
 import Toast from "./Toast";
 
 const ToastContainer = (props) => {

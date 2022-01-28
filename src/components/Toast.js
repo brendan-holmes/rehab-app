@@ -1,4 +1,4 @@
-import react, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import infoIcon from './../resources/icons/info.png';
 import checkIcon from './../resources/icons/check.png';
 import errorIcon from './../resources/icons/exclamation.png';
