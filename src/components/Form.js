@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import {put} from '../apiClient.js';
 
+const getNewKey = () => {
+  var ts = new Date().getTime();
+  const randid = Math.floor(Math.random() * 512);
+  return ((ts * 512) + randid).toString();
+}
+
 const Form = (props) => {
   
   const [inputs, setInputs] = useState({'A': '', 'B': ''});
@@ -15,13 +21,19 @@ const Form = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     setInputs({'A': '', 'B': ''});
-    const data = {'A': inputs.A, 'B': inputs.B};
+    const data = {
+      'A': inputs.A, 
+      'B': inputs.B,
+      'id': getNewKey(),
+      'timeStamp': new Date().toUTCString()};
+    props.addItem(data);
+
     put(data)
       .then(result => {
-        props.addToast({"Title": "Success", "Message": `Added item`, "Type": "success"});
+        props.addToast({"message": `Added item`, "type": "success"});
       })
       .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error}`, "type": "error"}));
-      props.setIsListRefreshRequired(true);
+      // props.setIsListRefreshRequired(true);
   };
   
   return (

@@ -1,5 +1,10 @@
 // Get a nicely formatted string from a Date object
 const formatDate = (date) => {
+    if (!date) {
+        // console.log("Undefined date value passed to dataUtils.formatDate");
+        return "";
+    }
+
     var milliseconds = Date.now() - date.getTime();
     var seconds = milliseconds / 1000;
     var minutes = seconds / 60;

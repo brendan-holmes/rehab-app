@@ -1,40 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import {list} from '../apiClient.js';
 import InfoCard from './InfoCard.js';
-import { formatDate } from '../dateUtils.js';
+import Form from './Form.js';
 
 const Info = (props) => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
+
+  const PushItem = (newItem) => {
+    setData([...data, newItem])
+  }
 
   useEffect(() => {
     if (props.isListRefreshRequired) {
       list()
       .then(info => {
         // console.log(info);
-        setData(info);
-        props.addToast({"title": "Success", "message": `Refreshed data`, "type": "success"});
+        setData(info.Items);
+        props.addToast({"message": `Refreshed data`, "type": "success"});
       })
       .catch(error => {
-        props.addToast({"Title": "Error", "Message": `Unable to refresh data: ${error}`, "Type": "error"});
+        props.addToast({"Message": `Unable to refresh data: ${error}`, "Type": "error"});
       });
-      props.setLastUpdated(formatDate(new Date()));
+      props.setLastUpdated(new Date());
       props.setIsListRefreshRequired(false);
     }
   });
 
-  const dynamoObjectToHtml = (data) => {
-    if (data && data.Items && Array.isArray(data.Items)) {
-      return (
-        <ul>
-          {data.Items.map((item, index) => {
+  const content = (data) => {
+    if (data !== null) {      
+      if (data && Array.isArray(data)) {
+        return (
+          <ul>
+          {data.sort((a,b) => new Date(b.timeStamp) - new Date(a.timeStamp)).map((item, index) => {
             const cardProps = {
               fields: [
                 {
-                  "name": "A",
+                  "name": "Field A",
                   "value": item.A
                 },
                 {
-                  "name": "B",
+                  "name": "Field B",
                   "value": item.B
                 },
               ],
@@ -42,18 +47,32 @@ const Info = (props) => {
               timeStamp: item.timeStamp,
               index: index,
               key: index,
-              setIsListRefreshRequired: props.setIsListRefreshRequired,
-              addToast: props.addToast
+              // setIsListRefreshRequired: props.setIsListRefreshRequired,
+              addToast: props.addToast,
+              setData: setData,
+              data: data
             };
-            return <InfoCard {...cardProps}/>})}
+            return <InfoCard {...cardProps}/>})
+            }
         </ul>
       )
     }
   }
-
-  const content = data === null ? 'Loading data...' : dynamoObjectToHtml(data);
+  else {
+    return 'Loading data...';
+  }
+  }
   
-  return <div>{content}</div>
+  return (
+    <div>
+      <Form 
+          // setIsListRefreshRequired={props.setIsListRefreshRequired}
+          addToast={props.addToast}
+          addItem={PushItem}
+        />
+      {content(data)}
+    </div>
+  );
 };
 
 export default Info;

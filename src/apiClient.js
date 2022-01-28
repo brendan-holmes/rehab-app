@@ -38,9 +38,7 @@ async function dynamoDbOperation(operation, payload = {}) {
 function put(data) {
     const payload = {
         'Item': {
-            ...data, 
-            'id': getNewKey(),
-            'timeStamp': new Date().toUTCString()
+            ...data
         }
     }
     console.log('payload: ', payload);
@@ -58,12 +56,6 @@ function remove(id) {
         }
         return dynamoDbOperation('delete', payload);    
     }
-}
-
-function getNewKey() {
-    var ts = new Date().getTime();
-    const randid = Math.floor(Math.random() * 512);
-    return ((ts * 512) + randid).toString();
 }
 
 export {put, list, remove};

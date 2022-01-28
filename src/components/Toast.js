@@ -4,15 +4,17 @@ import checkIcon from './../resources/icons/check.png';
 import errorIcon from './../resources/icons/exclamation.png';
 
 const Toast = (props) => {
-
-    useEffect(() => {
-        // todo: delete toast from list instead of just hiding
-        setInterval(() => setShowToast(false), 5000);
-    }, [])
     const [showToast, setShowToast] = useState(true);
     const handleXButtonClick = () => {
         setShowToast(false);
     }
+
+    // console.log("Toast - ", "message: ", props.message, ", type: ", props.type, ", show: ", showToast);
+
+    useEffect(() => {
+        // todo: delete toast from list instead of just hiding
+        setTimeout(() => setShowToast(false), 5000);
+    }, [])
 
     let imgSrc;
     let backgroundColor;
@@ -42,7 +44,6 @@ const Toast = (props) => {
                     <img src={imgSrc} alt="" className="toast-icon" />
                 </div>
                 <div className="toast-content">
-                    <p className="notification-title"><strong>{props.title}</strong></p>
                     <p className="notification-message">{props.message}</p>
                 </div>
                 <button className="no-border" onClick={handleXButtonClick}>×</button>

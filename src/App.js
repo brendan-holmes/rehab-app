@@ -1,14 +1,14 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
-import Form from './components/Form.js';
 import Info from './components/Info.js';
 import NavBar from './components/NavBar';
 import ToastContainer from './components/ToastContainer';
 import refreshIcon from './resources/icons/refresh.png';
+import { formatDate } from './dateUtils.js';
 
 function App() {
   const [isListRefreshRequired, setIsListRefreshRequired] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState('Never');
+  const [lastUpdated, setLastUpdated] = useState(null);
   const [toastList, setToastList] = useState([]);
   const refresh = false;
 
@@ -32,15 +32,12 @@ function App() {
       </header>
       <NavBar>
         <li>Rehab</li>
-        <li className="small-text">Last updated: {lastUpdated}</li>
+        <li className="small-text">Last updated: {formatDate(lastUpdated)}</li>
         <li><button className="no-border" onClick={() => setIsListRefreshRequired(true)}>
           <img className="navbar-refresh" src={refreshIcon} alt=""/>
           </button></li>
       </NavBar>
-      <Form 
-        setIsListRefreshRequired={setIsListRefreshRequired}
-        addToast={AddToast}
-      />
+      
       <Info
         setLastUpdated={setLastUpdated}
         isListRefreshRequired={isListRefreshRequired}
