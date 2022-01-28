@@ -1,10 +1,17 @@
 import React from 'react';
 import {remove} from '../apiClient.js';
+import { formatDate } from '../dateUtils.js';
 
+// pass in an object with a list of fields, each with "name" and "value" property
+// e.g.
+// props.timeStamp
+// props.fields = [{"name":"field1", "value":"2"}, etc]
 const InfoCard = (props) => {
     const handleDeleteClick = () => {
-        console.log("Delete clicked");
-        remove(props.id).then(response => console.log(response));
+        console.log(`Delete clicked (id: ${props.id})`);
+        remove(props.id)
+            .then(response => props.addToast({"title": "Success", "message": `Deleted item`, "type": "success"}))
+            .catch(error => props.addToast({"title": "Success", "message": `Deleted item`, "type": "success"}));
         props.setIsListRefreshRequired(true);
     }
     
@@ -12,9 +19,8 @@ const InfoCard = (props) => {
         <div className='info-card'>
             <p className="delete-button" onClick={handleDeleteClick}>×</p>
             <li key={props.index}>
-                <p>{props.timeStamp}</p>
-                <p><strong>Field 1</strong> {props.A}</p>
-                <p><strong>Field 2</strong> {props.B}</p>
+                <p className="small-text">{formatDate(new Date(props.timeStamp))} ago</p>
+                {props.fields.map((field, index) => <p key={index}><strong>{field.name}</strong> {field.value}</p>)}
             </li> 
         </div>
     )

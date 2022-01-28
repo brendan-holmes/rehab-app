@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {list} from '../apiClient.js';
 import InfoCard from './InfoCard.js';
+import { formatDate } from '../dateUtils.js';
 
 const Info = (props) => {
   const [data, setData] = useState(null);
@@ -11,7 +12,12 @@ const Info = (props) => {
       .then(info => {
         // console.log(info);
         setData(info);
+        props.addToast({"title": "Success", "message": `Refreshed data`, "type": "success"});
+      })
+      .catch(error => {
+        props.addToast({"Title": "Error", "Message": `Unable to refresh data: ${error}`, "Type": "error"});
       });
+      props.setLastUpdated(formatDate(new Date()));
       props.setIsListRefreshRequired(false);
     }
   });
@@ -22,10 +28,22 @@ const Info = (props) => {
         <ul>
           {data.Items.map((item, index) => {
             const cardProps = {
-              ...item,
+              fields: [
+                {
+                  "name": "A",
+                  "value": item.A
+                },
+                {
+                  "name": "B",
+                  "value": item.B
+                },
+              ],
+              id: item.id,
+              timeStamp: item.timeStamp,
               index: index,
               key: index,
-              setIsListRefreshRequired: props.setIsListRefreshRequired
+              setIsListRefreshRequired: props.setIsListRefreshRequired,
+              addToast: props.addToast
             };
             return <InfoCard {...cardProps}/>})}
         </ul>

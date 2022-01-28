@@ -13,7 +13,7 @@
   }
 }
 
-.App-header {
+.App {
   background-color: white;
   min-height: 100vh;
   display: flex;
@@ -75,6 +75,21 @@ button {
   visibility: hidden;
 }
 
+.info-card {
+  /* Layout */
+  margin-bottom: 20px;
+  padding: 10px;
+
+  /* Border */
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+}
+
+.info-card:hover {
+  background-color: rgb(243, 243, 247);
+}
+
 .info-card:hover .delete-button {
   visibility: visible;
 }
@@ -85,4 +100,136 @@ input {
   border-left: none;
   border-bottom-width: 1px;
   border-color: lightgray;
+}
+
+.NavBar {
+  /* Positioning */
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+
+  /* Border */
+  border-style: solid;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom-width: 1px;
+  border-color: lightgray;
+
+  /* Text */
+  color: grey;
+}
+
+.NavBar img {
+  height: 25px;
+  width: 25px;
+  opacity: 0.7;
+}
+
+.b-form {
+  /* Layout */
+  display: block;
+  padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+
+  /* Border */
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+}
+
+.small-text {
+  font-size: small;
+}
+
+ul {
+  padding: 0;
+}
+
+.no-border {
+  border: none;
+}
+
+.toast-container {
+  position: fixed;
+  box-sizing: border-box;
+  left: 0;
+  bottom: 0;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  width: 300px;
+}
+
+.toast {
+  /* Position */
+  animation: toast-slide-up .7s;
+  transition: transform .6s ease-in;
+  margin-top: 10px;
+
+  /* Text */
+  font-size: 14px;
+  
+  /* Border */
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  
+  /* Layout */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  /* padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 80px;
+  padding-right: 80px; */
+}
+
+.toast-neutral {
+  background-color: rgb(243, 243, 247);
+}
+
+.toast-red {
+  background-color: rgb(255, 211, 211);
+}
+
+.toast-green {
+  background-color: rgb(228, 247, 221);
+}
+
+@keyframes toast-slide-up {
+  from {
+    transform: translateY(100%);
+		
+	}
+	to {
+    transform: translateY(0);
+	}
+}
+
+.toast-icon {
+  height: 32px;
+  width: 32px;
+  margin-left: 20px;
+  margin-right: 10px;
+}
+
+.toast-content {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.toast button {
+  /* Position */
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 0;
+  position: relative;
+  align-self: flex-start;
+  outline: none;
+  font-size: 25px;
+  color: grey;
+  line-height: 1;
+  background: inherit;
 }

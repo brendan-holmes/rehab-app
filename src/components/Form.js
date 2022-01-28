@@ -18,16 +18,16 @@ const Form = (props) => {
     const data = {'A': inputs.A, 'B': inputs.B};
     put(data)
       .then(result => {
-        console.log('Success: ', result);
+        props.addToast({"Title": "Success", "Message": `Added item`, "Type": "success"});
       })
-      .catch(error => alert('Error saving fields', error));
+      .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error}`, "type": "error"}));
       props.setIsListRefreshRequired(true);
   };
   
   return (
-    <form>
-      <div><label>Field 1 <input type='number' id='A' value={inputs.A} onChange={handleChange}/></label></div>
-      <div><label>Field 2 <input type='number' id='B' value={inputs.B} onChange={handleChange}/></label></div>
+    <form className="b-form">
+      <div><label>Field A <input type='number' id='A' value={inputs.A} onChange={handleChange}/></label></div>
+      <div><label>Field B <input type='number' id='B' value={inputs.B} onChange={handleChange}/></label></div>
       <div><button type='submit' onClick={handleSubmit}>Add</button></div>
     </form>
   );
