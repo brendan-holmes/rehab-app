@@ -1,3 +1,24 @@
+# Rehab App by Brendan Holmes
+
+Serverless CRUD app using React (create-react-app) for the front-end and AWS API Gateway, Lambda and Dynamo DB for the back-end.
+
+## todo
+
+### Bugs
+- Fix error handling for failed API calls, and show error toast
+- Fix bug where if one item is in edit, and you create a new item, the item in edit changes (use IDs instead of list indices)
+- Make 'last updated' time automatically update over time
+- Fix the loading placeholder when waiting for data
+- Fix the header on mobile
+
+### Features
+- Add support for more fields
+
+### Improvements
+- Refactor the data structure that represents the "fake" data to more closely match the real one
+- Refactor the way hooks are passed around
+- Improve the design and layout
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
