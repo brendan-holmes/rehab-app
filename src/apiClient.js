@@ -3,7 +3,8 @@ async function dynamoDbOperation(operation, payload = {}) {
     if (
         (operation !== 'list') &&
         (operation !== 'create') &&
-        (operation !== 'delete')
+        (operation !== 'delete') &&
+        (operation !== 'update')
         ) {
             console.log('Invalid dynamo operation.');
         return null;
@@ -58,4 +59,21 @@ function remove(id) {
     }
 }
 
-export {put, list, remove};
+function update(data) {
+    if (data.id) {
+        const payload = {
+            'Key': { 'id': data.id },
+            'UpdateExpression': 'set A= :a, B = :b',
+            'ExpressionAttributeValues':
+            {
+                ':a': data.A,
+                ':b': data.B
+            }
+        }
+        return dynamoDbOperation('update', payload);    
+    } else {
+        throw Error("Cannot update")
+    }
+}
+
+export { put, list, remove, update };

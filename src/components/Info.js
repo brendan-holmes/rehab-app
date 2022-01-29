@@ -10,13 +10,22 @@ const Info = (props) => {
     setData([...data, newItem])
   }
 
+  // todo: Use IDs instead of indexes which can get out of whack
+  const UpdateItem = (updatedItem) => {
+    const index = data.findIndex(i => i.id === updatedItem.id);
+    if (index > -1) {
+        let dataShallowCopy = [...data];
+        dataShallowCopy[index] = updatedItem;
+        setData(dataShallowCopy);
+    }
+  }
+
   useEffect(() => {
     if (props.isListRefreshRequired) {
       list()
       .then(info => {
-        // console.log(info);
         setData(info.Items);
-        props.addToast({"message": `Refreshed data`, "type": "success"});
+        props.addToast({"message": `Data refreshed`, "type": "success"});
       })
       .catch(error => {
         props.addToast({"Message": `Unable to refresh data: ${error}`, "Type": "error"});
@@ -35,11 +44,11 @@ const Info = (props) => {
             const cardProps = {
               fields: [
                 {
-                  "name": "Field A",
+                  "name": "A",
                   "value": item.A
                 },
                 {
-                  "name": "Field B",
+                  "name": "B",
                   "value": item.B
                 },
               ],
@@ -50,7 +59,8 @@ const Info = (props) => {
               // setIsListRefreshRequired: props.setIsListRefreshRequired,
               addToast: props.addToast,
               setData: setData,
-              data: data
+              data: data,
+              updateItem: UpdateItem
             };
             return <InfoCard {...cardProps}/>})
             }
