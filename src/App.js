@@ -9,10 +9,11 @@ import { formatDate } from './dateUtils.js';
 function App() {
   const [isListRefreshRequired, setIsListRefreshRequired] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [lastUpdatedRelative, setLastUpdatedRelative] = useState('Never');
   const [toastList, setToastList] = useState([]);
   const refresh = false;
 
-  //trigger updates
+  // trigger data refresh updates
   useEffect(() => {
     if (refresh) {
       setInterval(() => {
@@ -22,6 +23,19 @@ function App() {
     }
   }, [])
 
+  // sync 'last updated' and 'last updated relative'
+  useEffect(() => {
+    setLastUpdatedRelative(formatDate(lastUpdated));
+  }, [lastUpdated])
+
+  // trigger updated of 'last updated relative' updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLastUpdatedRelative(formatDate(lastUpdated));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [lastUpdated]);
+
   const AddToast = (toast) => {
     setToastList([...toastList, toast]);
   }
@@ -30,7 +44,7 @@ function App() {
     <div className="App">
       <NavBar>
         <li>Rehab</li>
-        <li className="small-text">Last updated: {formatDate(lastUpdated)}</li>
+        <li className="small-text">Last updated: {lastUpdatedRelative}</li>
         <li>
           <button className="no-border" onClick={() => setIsListRefreshRequired(true)}>
             <img className="navbar-refresh" src={refreshIcon} alt=""/>

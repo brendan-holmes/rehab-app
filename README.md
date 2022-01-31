@@ -7,17 +7,21 @@ Serverless CRUD app using React (create-react-app) for the front-end and AWS API
 ### Bugs
 - Fix error handling for failed API calls, and show error toast
 - Fix bug where if one item is in edit, and you create a new item, the item in edit changes (use IDs instead of list indices)
-- Make 'last updated' time automatically update over time
-- Fix the loading placeholder when waiting for data
-- Fix the header on mobile
+- *DONE* Make 'last updated' time automatically update over time
+- *DONE* Fix the loading placeholder when waiting for data
+- *DONE* Fix the header on mobile
+- Fix "Form submission canceled because the form is not connected" error message when cancelling out of editing card
 
 ### Features
 - Add support for more fields
+- *DONE* Show "nothing available yet" message when there are no cards
+- Add hover effects to everything
 
 ### Improvements
 - Refactor the data structure that represents the "fake" data to more closely match the real one
 - Refactor the way hooks are passed around
 - Improve the design and layout
+- Add support for "enter" key press when editing a card
 
 # Getting Started with Create React App
 

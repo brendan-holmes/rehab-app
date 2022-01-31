@@ -45,7 +45,10 @@ const InfoCard = (props) => {
                 .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error}`, "type": "error"}));
         }
     }
-    const handleCancelEdit = () => { setIsInEdit(false) }
+    const handleCancelEdit = (event) => {
+        event.preventDefault();
+        setIsInEdit(false);
+    }
 
     const editButton = isInEdit ?
         null :
@@ -58,7 +61,7 @@ const InfoCard = (props) => {
         (
             <div className="form-field">
                 <button className="form-button" type='submit' onClick={handleSaveEdit}>Save</button>
-                <button className="form-button" onClick={handleCancelEdit}>Cancel</button>
+                <button className="form-button" type='button' onClick={handleCancelEdit}>Cancel</button>
             </div>
         ) :
         null;

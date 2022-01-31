@@ -36,10 +36,10 @@ const Info = (props) => {
   });
 
   const content = (data) => {
-    if (data !== null) {      
+    if (data && data.length > 0) {      
       if (data && Array.isArray(data)) {
         return (
-          <ul>
+          <ul className="info">
           {data.sort((a,b) => new Date(b.timeStamp) - new Date(a.timeStamp)).map((item, index) => {
             const cardProps = {
               fields: [
@@ -63,13 +63,13 @@ const Info = (props) => {
               updateItem: UpdateItem
             };
             return <InfoCard {...cardProps}/>})
-            }
+          }
         </ul>
       )
     }
   }
   else {
-    return 'Loading data...';
+    return 'No items to show';
   }
   }
   
