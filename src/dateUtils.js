@@ -1,7 +1,6 @@
 // Get a nicely formatted string from a Date object
 const formatDate = (date) => {
     if (!date) {
-        // console.log("Undefined date value passed to dataUtils.formatDate");
         return "";
     }
 
@@ -16,17 +15,17 @@ const formatDate = (date) => {
     if (seconds < 30) {
         return 'Just now';
     } else if (seconds < 60) {
-        return `${Math.round(seconds)}s`;
+        return `${Math.round(seconds)}s ago`;
     } else if (minutes < 60) {
-        return `${Math.round(minutes)}m`;
+        return `${Math.round(minutes)}m ago`;
     } else if (hours < 24) {
-        return `${Math.round(hours)}h`;
+        return `${Math.round(hours)}h ago`;
     } else if (days < 7) {
-        return `${Math.round(days)}d`;
+        return `${Math.round(days)}d ago`;
     } else if (weeks < 60) {
-        return `${Math.round(weeks)}w`;
+        return `${Math.round(weeks)}w ago`;
     } else {
-        return `${Math.round(years)}y`;
+        return `${Math.round(years)}y ago`;
     }
 }
 

@@ -75,7 +75,7 @@ const InfoCard = (props) => {
                 </li>
             </ul>
             <li key={props.id}>
-                <p className="small-text">{formatDate(new Date(props.timeStamp))}</p>
+                <p className="small-text info-card-time">{formatDate(new Date(props.timeStamp))}</p>
                 {props.fields.map((field) => 
                     <InfoCardField key={field.name} isInEdit={isInEdit} name={field.name} value={field.value} inputs={fields} setInputs={setFields}/>)}
             </li> 
