@@ -11,11 +11,10 @@ function App() {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [lastUpdatedRelative, setLastUpdatedRelative] = useState('Never');
   const [toastList, setToastList] = useState([]);
-  const refresh = false;
 
   // trigger data refresh updates
   useEffect(() => {
-    if (refresh) {
+    if (false) {
       setInterval(() => {
         console.log('Refreshing data...');
         setIsListRefreshRequired(true);

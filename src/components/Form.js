@@ -54,7 +54,7 @@ const Form = (props) => {
         </div>
         <div className="form-field">
           <button className="form-button" type='submit' onClick={handleSubmit}>Save</button>
-          <button className="form-button" onClick={handleCancel}>Cancel</button>
+          <button className="form-button" type='button' onClick={handleCancel}>Cancel</button>
         </div>
       </form>
     );

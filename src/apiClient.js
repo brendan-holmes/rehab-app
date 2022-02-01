@@ -38,7 +38,6 @@ function put(data) {
                 ...data
             }
         }
-        console.log('payload: ', payload);
         return dynamoDbOperation('create', payload);
     } else {
         return Promise.reject(new Error('Cannot add new item'));

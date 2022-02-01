@@ -10,7 +10,7 @@ Serverless CRUD app using React (create-react-app) for the front-end and AWS API
 - *DONE* Make 'last updated' time automatically update over time
 - *DONE* Fix the loading placeholder when waiting for data
 - *DONE* Fix the header on mobile
-- Fix "Form submission canceled because the form is not connected" error message when cancelling out of editing card
+- *DONE* Fix "Form submission canceled because the form is not connected" error message when cancelling out of editing card
 
 ### Features
 - Add support for more fields
