@@ -1,5 +1,7 @@
 
 async function dynamoDbOperation(operation, payload = {}) {
+    const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
+    
     if (
         (operation !== 'list') &&
         (operation !== 'create') &&
@@ -13,7 +15,6 @@ async function dynamoDbOperation(operation, payload = {}) {
     var headers = new Headers();
     headers.append('Content-Type', 'application/json');
     
-    const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
     var body = JSON.stringify({
         'operation': operation,
         'tableName': 'rehab-app',
@@ -27,23 +28,21 @@ async function dynamoDbOperation(operation, payload = {}) {
         redirect: 'follow'
     };
 
-    try {
-        const response = await fetch(url, requestOptions);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        return error;
-    }
+    return await fetch(url, requestOptions);
 }
 
 function put(data) {
-    const payload = {
-        'Item': {
-            ...data
+    if (data) {
+        const payload = {
+            'Item': {
+                ...data
+            }
         }
+        console.log('payload: ', payload);
+        return dynamoDbOperation('create', payload);
+    } else {
+        return Promise.reject(new Error('Cannot add new item'));
     }
-    console.log('payload: ', payload);
-    return dynamoDbOperation('create', payload);
 }
 
 function list() {
@@ -56,6 +55,8 @@ function remove(id) {
             'Key': { 'id': id }
         }
         return dynamoDbOperation('delete', payload);    
+    } else {
+        return Promise.reject(new Error('Cannot remove'));
     }
 }
 
@@ -72,7 +73,7 @@ function update(data) {
         }
         return dynamoDbOperation('update', payload);    
     } else {
-        throw Error("Cannot update")
+        return Promise.reject(new Error("Cannot update"));
     }
 }
 

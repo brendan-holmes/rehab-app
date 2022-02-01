@@ -20,13 +20,12 @@ const Info = (props) => {
   useEffect(() => {
     if (props.isListRefreshRequired) {
       list()
-      .then(info => {
-        setData(info.Items);
-        props.addToast({"message": `Data refreshed`, "type": "success"});
-      })
-      .catch(error => {
-        props.addToast({"Message": `Unable to refresh data: ${error}`, "Type": "error"});
-      });
+        .then(response => response.json())
+        .then(data => {
+          setData(data.Items);
+          props.addToast({"message": `Data refreshed`, "type": "success"});
+        })
+        .catch(error => props.addToast({"message": `Unable to refresh data: ${error.message}`, "type": "error"}));
       props.setLastUpdated(new Date());
       props.setIsListRefreshRequired(false);
     }

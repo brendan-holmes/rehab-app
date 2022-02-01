@@ -34,11 +34,9 @@ const Form = (props) => {
     setShowForm(false);
 
     put(data)
-      .then(result => {
-        props.addToast({"message": `Added item`, "type": "success"});
-      })
-      .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error}`, "type": "error"}));
-      // props.setIsListRefreshRequired(true);
+      .then(response => response.json())
+      .then(() => props.addToast({"message": `Added item`, "type": "success"}))
+      .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error.message}`, "type": "error"}));
   };
   
   if (showForm) {

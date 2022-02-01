@@ -17,8 +17,9 @@ const InfoCard = (props) => {
     const handleDeleteClick = () => {
         props.setData(props.data.filter(d => d.id !== props.id));
         remove(props.id)
-            .then(response => props.addToast({"message": `Item deleted`, "type": "success"}))
-            .catch(error => props.addToast({"message": `An error occurred: ${error}`, "type": "error"}));
+            .then(response => response.json())
+            .then(() => props.addToast({"message": `Item deleted`, "type": "success"}))
+            .catch(error => props.addToast({"message": `An error occurred: ${error.message}`, "type": "error"}));
     }
 
     // Update inputs whenever props.fields (data) updates
@@ -39,10 +40,9 @@ const InfoCard = (props) => {
             props.updateItem(data);
                 
             update(data)
-                .then(result => {
-                    props.addToast({"message": `Item updated`, "type": "success"});
-                })
-                .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error}`, "type": "error"}));
+                .then(response => response.json())
+                .then(() => props.addToast({"message": `Item updated`, "type": "success"}))
+                .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error.message}`, "type": "error"}));
         }
     }
     const handleCancelEdit = (event) => {

@@ -32,12 +32,10 @@ const Toast = (props) => {
             backgroundColor = 'red';
             break;
         default:
-            imgSrc = infoIcon;
-            backgroundColor = 'neutral';
             break;
     }
 
-    if (showToast) {
+    if (showToast && props.message && props.message !== "" && imgSrc && backgroundColor) {
         return (
             <div className={`toast toast-${backgroundColor}`}>
                 <div className="notification-image">

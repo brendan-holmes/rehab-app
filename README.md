@@ -5,7 +5,7 @@ Serverless CRUD app using React (create-react-app) for the front-end and AWS API
 ## todo
 
 ### Bugs
-- Fix error handling for failed API calls, and show error toast
+- *DONE* Fix error handling for failed API calls, and show error toast
 - *DONE* Fix bug where if one item is in edit, and you create a new item, the item in edit changes (use IDs instead of list indices)
 - *DONE* Make 'last updated' time automatically update over time
 - *DONE* Fix the loading placeholder when waiting for data
@@ -22,6 +22,7 @@ Serverless CRUD app using React (create-react-app) for the front-end and AWS API
 - Refactor the way hooks are passed around
 - Improve the design and layout
 - Add support for "enter" key press when editing a card
+- Delete toast instead of hiding it
 
 # Getting Started with Create React App
 
