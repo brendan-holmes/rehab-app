@@ -15,9 +15,9 @@ Serverless CRUD app using React (create-react-app) for the front-end and AWS API
 ### Features
 - Add support for more fields
 - *DONE* Show "nothing available yet" message when there are no cards
-- Add hover effects to everything
 
 ### Improvements
+- *DONE* Add hover effects to everything
 - Refactor the data structure that represents the "fake" data to more closely match the real one
 - Refactor the way hooks are passed around
 - Improve the design and layout

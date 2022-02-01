@@ -19,10 +19,6 @@ const Toast = (props) => {
     let imgSrc;
     let backgroundColor;
     switch (props.type) {
-        case 'info':
-            imgSrc = infoIcon;
-            backgroundColor = 'neutral';
-            break;
         case 'success':
             imgSrc = checkIcon;
             backgroundColor = 'green';
