@@ -6,7 +6,7 @@ Serverless CRUD app using React (create-react-app) for the front-end and AWS API
 
 ### Bugs
 - Fix error handling for failed API calls, and show error toast
-- Fix bug where if one item is in edit, and you create a new item, the item in edit changes (use IDs instead of list indices)
+- *DONE* Fix bug where if one item is in edit, and you create a new item, the item in edit changes (use IDs instead of list indices)
 - *DONE* Make 'last updated' time automatically update over time
 - *DONE* Fix the loading placeholder when waiting for data
 - *DONE* Fix the header on mobile

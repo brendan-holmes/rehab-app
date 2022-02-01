@@ -10,14 +10,11 @@ const Info = (props) => {
     setData([...data, newItem])
   }
 
-  // todo: Use IDs instead of indexes which can get out of whack
-  const UpdateItem = (updatedItem) => {
-    const index = data.findIndex(i => i.id === updatedItem.id);
-    if (index > -1) {
-        let dataShallowCopy = [...data];
-        dataShallowCopy[index] = updatedItem;
-        setData(dataShallowCopy);
-    }
+  const updateItem = (updatedItem) => {
+    // Delete old version and push it onto the end
+    const updatedData = [...data].filter(d => d.id !== updatedItem.id);
+    updatedData.push(updatedItem);
+    setData(updatedData);
   }
 
   useEffect(() => {
@@ -54,13 +51,12 @@ const Info = (props) => {
               ],
               id: item.id,
               timeStamp: item.timeStamp,
-              index: index,
-              key: index,
+              key: item.id,
               // setIsListRefreshRequired: props.setIsListRefreshRequired,
               addToast: props.addToast,
               setData: setData,
               data: data,
-              updateItem: UpdateItem
+              updateItem: updateItem
             };
             return <InfoCard {...cardProps}/>})
           }

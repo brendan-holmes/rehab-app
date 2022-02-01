@@ -12,7 +12,7 @@ import InfoCardField from './InfoCardField.js';
 const InfoCard = (props) => {
 
     const [isInEdit, setIsInEdit] = useState(false);
-    const [fieldList, setInputs] = useState(props.fields);
+    const [fields, setFields] = useState(props.fields);
 
     const handleDeleteClick = () => {
         props.setData(props.data.filter(d => d.id !== props.id));
@@ -22,18 +22,18 @@ const InfoCard = (props) => {
     }
 
     // Update inputs whenever props.fields (data) updates
-    useEffect(() => setInputs(props.fields), [props.fields]);
+    useEffect(() => setFields(props.fields), [props.fields]);
 
     const handleEditClick = () => { setIsInEdit(true) }
     const handleSaveEdit = () => { 
         setIsInEdit(false);
-        let fields = {};
-        if (Array.isArray(fieldList)) {
-            fieldList.forEach(f => {
-                fields[f.name] = f.value;
+        let fieldsObject = {};
+        if (Array.isArray(fields)) {
+            fields.forEach(f => {
+                fieldsObject[f.name] = f.value;
             });
             const data = {
-                ...fields,
+                ...fieldsObject,
                 'id': props.id,
                 'timeStamp': new Date().toUTCString()};
             props.updateItem(data);
@@ -74,10 +74,10 @@ const InfoCard = (props) => {
                     <img className="info-card-tool-button" src={deleteIcon} alt="" />
                 </li>
             </ul>
-            <li key={props.index}>
+            <li key={props.id}>
                 <p className="small-text">{formatDate(new Date(props.timeStamp))}</p>
-                {props.fields.map((field, index) => 
-                    <InfoCardField key={index} isInEdit={isInEdit} name={field.name} value={field.value} inputs={fieldList} setInputs={setInputs}/>)}
+                {props.fields.map((field) => 
+                    <InfoCardField key={field.name} isInEdit={isInEdit} name={field.name} value={field.value} inputs={fields} setInputs={setFields}/>)}
             </li> 
             {editOperationButtons}
         </div>
