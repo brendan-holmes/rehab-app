@@ -5,6 +5,8 @@ import NavBar from './components/NavBar';
 import ToastContainer from './components/ToastContainer';
 import refreshIcon from './resources/icons/refresh.png';
 import { formatDate } from './dateUtils.js';
+import Model from './components/model.js';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const [isListRefreshRequired, setIsListRefreshRequired] = useState(true);
@@ -50,6 +52,10 @@ function App() {
           </button>
         </li>
       </NavBar>
+
+      <ErrorBoundary errorMessage={"Unable to load model"}>
+        <Model />
+      </ErrorBoundary>
       
       <Info
         setLastUpdated={setLastUpdated}
