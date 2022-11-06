@@ -1,10 +1,8 @@
 import '@google/model-viewer/dist/model-viewer';
-import { v4 as uuidv4 } from 'uuid';
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 
-export default function Model() {
+export default function Model(props) {
     const modelRef1 = React.useRef();
-    const [annotations, setAnnotations] = useState([]);
 
     const handleModelClick = (event) => {
         const { clientX, clientY } = event;
@@ -12,12 +10,7 @@ export default function Model() {
         if (modelRef1.current) {
             let hit = modelRef1.current.positionAndNormalFromPoint(clientX, clientY);
             if (hit) {
-                hit.uuid = uuidv4();
-                console.log('Created UUID: ', hit.uuid);
-                setAnnotations((annotations) => {
-                    console.log('annotations:', [...annotations, hit]);
-                    return [...annotations, hit];
-                });
+                props.addData(hit);
             }
         }
     };
@@ -26,20 +19,11 @@ export default function Model() {
         if (event) {
             event.stopPropagation();
 
-            // remove annotation from list
-            // console.log('event.target: ', event.target);
-            console.log('annotations: ', annotations);
             if (event.target && event.target.id) {
-                // console.log('event.target.id: ', event.target.id);
-                setAnnotations((annotations) => {
-                    console.log('Removed annotation: ', event.target.id);
-                    console.log('annotations:', annotations.filter(a => a.uuid !== event.target.id));
-                    return annotations.filter(a => a.uuid !== event.target.id);
-                });
+                props.deleteDataById(event.target.id);
             }
         }
     }
-    const listAnnotations = () => console.log('annotations: ', annotations);
 
     const getDataPosition = (annotation) => {
         return `${annotation.position.x} ${annotation.position.y} ${annotation.position.z}`;
@@ -62,10 +46,33 @@ export default function Model() {
         textDecoration: 'none',
         margin: '4px 2px',
         borderRadius: '50%'
-        // textAlign: 'center',
-        // display: 'inline-block',
-        // font-size: '16px',
     };
+
+    const annotations = props.data ? 
+        props.data.map((annotation, idx) => {
+            if (annotation && annotation.uuid) {
+                return (
+                    <button
+                    key = {annotation.uuid}
+                    id = {annotation.uuid}
+                    className = "view-button"
+                    slot = {`hotspot-${annotation.uuid}`}
+                    data-position = {getDataPosition(annotation)}
+                    data-normal = {getDataNormal(annotation)}
+                    style = {annotationStyle}
+                    onClick = {handleAnnotationClick}
+                    />
+                )
+            } else {
+                return null;
+            }
+        })
+        : null;
+    
+    useEffect(() => {
+        console.log('useEffect')
+        console.log(props.data)
+    })
 
     return (
         <div className="model">
@@ -83,18 +90,7 @@ export default function Model() {
                 <div className="progress-bar hide" slot="progress-bar">
                     <div className="update-bar"></div>
                 </div>
-                {annotations.map((annotation, idx) => (
-                    <button
-                        key = {annotation.uuid}
-                        id = {annotation.uuid}
-                        className = "view-button"
-                        slot = {`hotspot-${annotation.uuid}`}
-                        data-position = {getDataPosition(annotation)}
-                        data-normal = {getDataNormal(annotation)}
-                        style = {annotationStyle}
-                        onClick = {handleAnnotationClick}
-                    />
-                ))}
+                {annotations}
             </model-viewer>
         </div>
     )

@@ -31,12 +31,14 @@ async function dynamoDbOperation(operation, payload = {}) {
     return await fetch(url, requestOptions);
 }
 
-function put(data) {
-    if (data) {
+function put(data, id) {
+    if (data && id) {
         const payload = {
             'Item': {
-                ...data
-            }
+                ...data,
+                'id': id
+            },
+            
         }
         return dynamoDbOperation('create', payload);
     } else {

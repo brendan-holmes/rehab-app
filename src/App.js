@@ -1,11 +1,11 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
-import Info from './components/Info.js';
+// import Info from './components/Info.js';
 import NavBar from './components/NavBar';
 import ToastContainer from './components/ToastContainer';
 import refreshIcon from './resources/icons/refresh.png';
 import { formatDate } from './dateUtils.js';
-import Model from './components/model.js';
+import ModelWithData from './components/ModelWithData';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
@@ -44,8 +44,8 @@ function App() {
   return (
     <div className="App">
       <NavBar>
-        <li>Rehab</li>
-        <li className="small-text">Last updated: {lastUpdatedRelative}</li>
+        <li>Rehab App</li>
+        {/* <li className="small-text">Last updated: {lastUpdatedRelative}</li> */}
         <li>
           <button className="no-border" onClick={() => setIsListRefreshRequired(true)}>
             <img className="navbar-refresh" src={refreshIcon} alt=""/>
@@ -54,15 +54,20 @@ function App() {
       </NavBar>
 
       <ErrorBoundary errorMessage={"Unable to load model"}>
-        <Model />
+        <ModelWithData 
+          setLastUpdated={setLastUpdated}
+          isListRefreshRequired={isListRefreshRequired}
+          setIsListRefreshRequired={setIsListRefreshRequired}
+          addToast={AddToast}
+        />
       </ErrorBoundary>
       
-      <Info
+      {/* <Info
         setLastUpdated={setLastUpdated}
         isListRefreshRequired={isListRefreshRequired}
         setIsListRefreshRequired={setIsListRefreshRequired}
         addToast={AddToast}
-      />
+      /> */}
       <ToastContainer toastList={toastList} />
       </div>
   );
