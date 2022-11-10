@@ -6,7 +6,18 @@ import { v4 as uuidv4 } from 'uuid';
 export default function ModelWithData (props) {
     const DEBUG = true;
     const [data, setData] = useState([]);
-    // const [isInEditMode, setIsInEditMode] = useState(false);
+    const [isInEditMode, setIsInEditMode] = useState(false);
+
+    // Not working
+    // const [cursor, setCursor] = useState('crosshair');
+
+    // const CURSOR_TYPES = {
+    //     pointer: 'pointer',
+    //     crosshair: 'crosshair'
+    // }
+    // const changeCursor = (cursorType) => {
+    //     setCursor(cursorType);
+    // }
 
     useEffect(() => {
         if (props.isListRefreshRequired) {
@@ -26,6 +37,10 @@ export default function ModelWithData (props) {
       });
 
     const addData = (dataPoint) => {
+        if (!isInEditMode) {
+            if (DEBUG) { console.log('Clicked model while not in edit mode.'); }
+            return;
+        }
         let newData;
         dataPoint.uuid = uuidv4();
         if (DEBUG) {
@@ -55,6 +70,11 @@ export default function ModelWithData (props) {
     };
 
     const deleteDataById = (id) => {
+        if(DEBUG) {console.log("deleteDataById: ", id) }
+        if (!window.confirm("Delete annotation?")) {
+            if(DEBUG) {console.log("Deletion cancelled by user: ", id) }
+            return;
+        }
         let newData;
         setData((d) => {
             newData = d.filter(a => a.uuid !== id);
@@ -71,14 +91,44 @@ export default function ModelWithData (props) {
         return newData;
     }
 
+    const buttonStyle = {
+        backgroundColor: '#FF0000',
+        background: 'linear-gradient(130deg, #CC00CC 33%, #CCCC11 85%, #00FFCC 100%)',
+        border: 'none',
+        color: 'white',
+        padding: '10px',
+        textDecoration: 'none',
+        margin: '4px 2px',
+        // cursor: cursor
+    };
+
+    const editButtonText = isInEditMode ? "Done" : "+ Add new injury";
+    const editButton = 
+        <button 
+            onClick={() => {
+                setIsInEditMode(!isInEditMode);
+                // setCursor(isInEditMode ? CURSOR_TYPES.crosshair : CURSOR_TYPES.pointer) // not working
+            }}
+            style={buttonStyle}
+        >
+            {editButtonText}
+        </button>;
+    const instructions = isInEditMode ? 
+        <div>Click on the model to add a new injury</div> :
+        null;
+
     return (
         <>
             <Model 
                 data={data}
                 addData={addData}
                 deleteDataById={deleteDataById}
+                // style={{cursor: cursor}}
             />
-            {/* <div>Add</div> */}
+            <span>
+                {editButton}
+            </span>
+            {instructions}
         </>
     );
 }

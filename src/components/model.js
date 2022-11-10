@@ -1,6 +1,9 @@
 import '@google/model-viewer/dist/model-viewer';
 import React, { useEffect } from 'react';
 
+import Annotation from './Annotation';
+import AnnotationLabel from './AnnotationLabel';
+
 export default function Model(props) {
     const modelRef1 = React.useRef();
 
@@ -15,52 +18,65 @@ export default function Model(props) {
         }
     };
 
-    const handleAnnotationClick = (event) => {
+    const handleDeleteClick = (event, id) => {
         if (event) {
             event.stopPropagation();
 
-            if (event.target && event.target.id) {
-                props.deleteDataById(event.target.id);
+            console.log("Delete clicked. id: ", id);
+            if (id) {
+                props.deleteDataById(id);
             }
         }
     }
 
-    const getDataPosition = (annotation) => {
+    const getDataPosition = (annotation, ) => {
         return `${annotation.position.x} ${annotation.position.y} ${annotation.position.z}`;
+    };
+
+    const getDataPositionWithOffset = (annotation, offset = {x: 0, y: 0, z: 0}) => {
+        return `${annotation.position.x + offset.x} ${annotation.position.y + offset.y} ${annotation.position.z + offset.z}`;
       };
     
-      const getDataNormal = (annotation) => {
+    const getDataNormal = (annotation) => {
         return `${annotation.normal.x} ${annotation.normal.y} ${annotation.normal.z}`;
-      };
+    };
 
     const style = {
-        height: '500px',
-        width: '500px'
+        height: '80vh',
+        width: '80vw',
+        // cursor: 'crosshair' // not working
     };
 
-    const annotationStyle = {
-        backgroundColor: '#04AA6D',
-        border: 'none',
-        color: 'white',
-        padding: '5px',
-        textDecoration: 'none',
-        margin: '4px 2px',
-        borderRadius: '50%'
-    };
+    
 
     const annotations = props.data ? 
         props.data.map((annotation, idx) => {
             if (annotation && annotation.uuid) {
                 return (
-                    <button
-                    key = {annotation.uuid}
-                    id = {annotation.uuid}
-                    className = "view-button"
-                    slot = {`hotspot-${annotation.uuid}`}
-                    data-position = {getDataPosition(annotation)}
-                    data-normal = {getDataNormal(annotation)}
-                    style = {annotationStyle}
-                    onClick = {handleAnnotationClick}
+                    <Annotation 
+                        key = {`${annotation.uuid}-annotation`}
+                        annotation = {annotation}
+                        dataPosition = {getDataPosition(annotation)}
+                        dataNormal = {getDataNormal(annotation)}
+                        handleAnnotationClick = {handleDeleteClick}
+                    />
+                )
+            } else {
+                return null;
+            }
+        })
+        : null;
+
+    const annotationLabels = props.data ? 
+        props.data.map((annotation, idx) => {
+            if (annotation && annotation.uuid) {
+                return (
+                    <AnnotationLabel 
+                        key = {`${annotation.uuid}-annotation-label`}
+                        annotation = {annotation}
+                        dataPosition = {getDataPositionWithOffset(annotation, {x:8, y: 1, z: 0})}
+                        dataNormal = {getDataNormal(annotation)}
+                        handleDeleteClick = {handleDeleteClick}
                     />
                 )
             } else {
@@ -86,11 +102,14 @@ export default function Model(props) {
                     modelRef1.current = ref;
                 }}
                 style={style}
+                disable-zoom
+                disable-pan
                 >
                 <div className="progress-bar hide" slot="progress-bar">
                     <div className="update-bar"></div>
                 </div>
                 {annotations}
+                {annotationLabels}
             </model-viewer>
         </div>
     )

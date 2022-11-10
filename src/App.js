@@ -14,13 +14,15 @@ function App() {
   const [lastUpdatedRelative, setLastUpdatedRelative] = useState('Never');
   const [toastList, setToastList] = useState([]);
 
+  const updatePeriodInMilliseconds = 60000;
+
   // trigger data refresh updates
   useEffect(() => {
     if (false) {
       setInterval(() => {
         console.log('Refreshing data...');
         setIsListRefreshRequired(true);
-      }, 5000)
+      }, updatePeriodInMilliseconds)
     }
   }, [])
 
@@ -33,7 +35,7 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setLastUpdatedRelative(formatDate(lastUpdated));
-    }, 5000);
+    }, updatePeriodInMilliseconds);
     return () => clearInterval(interval);
   }, [lastUpdated]);
 
@@ -46,11 +48,11 @@ function App() {
       <NavBar>
         <li>Rehab App</li>
         {/* <li className="small-text">Last updated: {lastUpdatedRelative}</li> */}
-        <li>
+        {/* <li>
           <button className="no-border" onClick={() => setIsListRefreshRequired(true)}>
             <img className="navbar-refresh" src={refreshIcon} alt=""/>
           </button>
-        </li>
+        </li> */}
       </NavBar>
 
       <ErrorBoundary errorMessage={"Unable to load model"}>
