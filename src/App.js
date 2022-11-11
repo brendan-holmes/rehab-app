@@ -1,10 +1,12 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
-import Info from './components/Info.js';
+// import Info from './components/Info.js';
 import NavBar from './components/NavBar';
 import ToastContainer from './components/ToastContainer';
 import refreshIcon from './resources/icons/refresh.png';
 import { formatDate } from './dateUtils.js';
+import ModelWithData from './components/ModelWithData';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const [isListRefreshRequired, setIsListRefreshRequired] = useState(true);
@@ -12,13 +14,15 @@ function App() {
   const [lastUpdatedRelative, setLastUpdatedRelative] = useState('Never');
   const [toastList, setToastList] = useState([]);
 
+  const updatePeriodInMilliseconds = 60000;
+
   // trigger data refresh updates
   useEffect(() => {
     if (false) {
       setInterval(() => {
         console.log('Refreshing data...');
         setIsListRefreshRequired(true);
-      }, 5000)
+      }, updatePeriodInMilliseconds)
     }
   }, [])
 
@@ -31,7 +35,7 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setLastUpdatedRelative(formatDate(lastUpdated));
-    }, 5000);
+    }, updatePeriodInMilliseconds);
     return () => clearInterval(interval);
   }, [lastUpdated]);
 
@@ -42,21 +46,30 @@ function App() {
   return (
     <div className="App">
       <NavBar>
-        <li>Rehab</li>
-        <li className="small-text">Last updated: {lastUpdatedRelative}</li>
-        <li>
+        <li>Rehab App</li>
+        {/* <li className="small-text">Last updated: {lastUpdatedRelative}</li> */}
+        {/* <li>
           <button className="no-border" onClick={() => setIsListRefreshRequired(true)}>
             <img className="navbar-refresh" src={refreshIcon} alt=""/>
           </button>
-        </li>
+        </li> */}
       </NavBar>
+
+      <ErrorBoundary errorMessage={"Unable to load model"}>
+        <ModelWithData 
+          setLastUpdated={setLastUpdated}
+          isListRefreshRequired={isListRefreshRequired}
+          setIsListRefreshRequired={setIsListRefreshRequired}
+          addToast={AddToast}
+        />
+      </ErrorBoundary>
       
-      <Info
+      {/* <Info
         setLastUpdated={setLastUpdated}
         isListRefreshRequired={isListRefreshRequired}
         setIsListRefreshRequired={setIsListRefreshRequired}
         addToast={AddToast}
-      />
+      /> */}
       <ToastContainer toastList={toastList} />
       </div>
   );
