@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Annotation from './Annotation';
 import AnnotationLabel from './AnnotationLabel';
 
+import model from '../resources/models/model.glb';
+
 export default function Model(props) {
     const DEBUG = true;
     const modelRef1 = React.useRef();
@@ -156,7 +158,7 @@ export default function Model(props) {
     return (
         <div className="model">
             <model-viewer 
-                src="./model.glb" 
+                src={model} 
                 ar-modes="webxr scene-viewer quick-look" 
                 camera-controls poster="poster.webp" 
                 shadow-intensity="1"
