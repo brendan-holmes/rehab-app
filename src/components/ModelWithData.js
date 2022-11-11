@@ -6,18 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 export default function ModelWithData (props) {
     const DEBUG = true;
     const [data, setData] = useState([]);
-    const [isInEditMode, setIsInEditMode] = useState(false);
-
-    // Not working
-    // const [cursor, setCursor] = useState('crosshair');
-
-    // const CURSOR_TYPES = {
-    //     pointer: 'pointer',
-    //     crosshair: 'crosshair'
-    // }
-    // const changeCursor = (cursorType) => {
-    //     setCursor(cursorType);
-    // }
+    const [tempAnnotation, setTempAnnotation] = useState({});
+    const [labelInEdit, setLabelInEdit] = useState(null);
 
     useEffect(() => {
         if (props.isListRefreshRequired) {
@@ -35,26 +25,54 @@ export default function ModelWithData (props) {
           props.setIsListRefreshRequired(false);
         }
       });
+    
+    const handleModelClick = (annotation) => {
+        addTempAnnotation(annotation);
+    }
 
-    const addData = (dataPoint) => {
-        if (!isInEditMode) {
-            if (DEBUG) { console.log('Clicked model while not in edit mode.'); }
+    const handleBackgroundClick = () => {
+        setTempAnnotation({});
+        setLabelInEdit(null);
+    }
+
+    const handleLabelClick = (id) => {
+        setLabelInEdit(id);
+    }
+
+    // Every annotation is first added as a temporary annotation,
+    // and then gets persisted once it has been named
+    const addTempAnnotation = (dataPoint) => {
+        if(DEBUG) {console.log("Setting temp annotation: ", dataPoint) }
+        dataPoint.name = "Unnamed injury";
+        dataPoint.uuid = uuidv4();
+        setTempAnnotation(dataPoint);
+        setLabelInEdit(dataPoint.uuid);
+    }
+
+    const nameTempAnnotation = (annotation) => {
+        console.log('Name Temp Annotation');
+        persistAnnotation(tempAnnotation);
+        setTempAnnotation({});
+    }
+
+    const persistAnnotation = (annotationWithUuid) => {
+        if (!annotationWithUuid.uuid) {
+            if (DEBUG) { console.error('Attempting to persist an annotation that doesn\'t have a uuid.'); }
             return;
         }
         let newData;
-        dataPoint.uuid = uuidv4();
         if (DEBUG) {
-            console.log('Created UUID: ', dataPoint.uuid);
+            console.log('Created UUID: ', annotationWithUuid.uuid);
         }
         setData((d) => {
-            newData = [...d, dataPoint];
+            newData = [...d, annotationWithUuid];
             if (DEBUG) {
                 console.log('Data:', newData);
             }
 
             return newData;
         });
-        put(dataPoint, dataPoint.uuid)
+        put(annotationWithUuid, annotationWithUuid.uuid)
             .then(response => response.json())
             .then((responseJson) => {
                 if (DEBUG) {
@@ -66,12 +84,23 @@ export default function ModelWithData (props) {
                 props.addToast({"message": `Added item`, "type": "success"})
             })
             .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error.message}`, "type": "error"}));
+        setLabelInEdit(null);
         return newData;
     };
 
-    const deleteDataById = (id) => {
+    const deleteAnnotationById = (id) => {
+        if (isTempAnnotation(id)) {
+            if (DEBUG) {
+                console.log('Removing temp annotation');
+            }
+            setTempAnnotation({});
+            return;
+        }
+
         if(DEBUG) {console.log("deleteDataById: ", id) }
-        if (!window.confirm("Delete annotation?")) {
+        const name = data.filter(a => a.uuid === id)[0].name || 'injury';
+        if(DEBUG) {console.log("deleteDataById: ", id) }
+        if (!window.confirm(`Delete ${name}?`)) {
             if(DEBUG) {console.log("Deletion cancelled by user: ", id) }
             return;
         }
@@ -91,6 +120,10 @@ export default function ModelWithData (props) {
         return newData;
     }
 
+    const isTempAnnotation = (id) => {
+        return tempAnnotation.uuid && id && id === tempAnnotation.uuid;
+    }
+
     const buttonStyle = {
         backgroundColor: '#FF0000',
         background: 'linear-gradient(130deg, #CC00CC 33%, #CCCC11 85%, #00FFCC 100%)',
@@ -98,37 +131,21 @@ export default function ModelWithData (props) {
         color: 'white',
         padding: '10px',
         textDecoration: 'none',
-        margin: '4px 2px',
-        // cursor: cursor
+        margin: '4px 2px'
     };
-
-    const editButtonText = isInEditMode ? "Done" : "+ Add new injury";
-    const editButton = 
-        <button 
-            onClick={() => {
-                setIsInEditMode(!isInEditMode);
-                // setCursor(isInEditMode ? CURSOR_TYPES.crosshair : CURSOR_TYPES.pointer) // not working
-            }}
-            style={buttonStyle}
-        >
-            {editButtonText}
-        </button>;
-    const instructions = isInEditMode ? 
-        <div>Click on the model to add a new injury</div> :
-        null;
 
     return (
         <>
             <Model 
                 data={data}
-                addData={addData}
-                deleteDataById={deleteDataById}
-                // style={{cursor: cursor}}
+                tempAnnotation={tempAnnotation}
+                handleModelClick={handleModelClick}
+                deleteDataById={deleteAnnotationById}
+                handleRename={nameTempAnnotation}
+                handleBackgroundClick={handleBackgroundClick}
+                labelInEdit={labelInEdit}
+                handleLabelClick={handleLabelClick}
             />
-            <span>
-                {editButton}
-            </span>
-            {instructions}
         </>
     );
 }
