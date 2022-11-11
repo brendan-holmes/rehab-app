@@ -4,10 +4,9 @@ import React, { useEffect, useState } from 'react';
 import Annotation from './Annotation';
 import AnnotationLabel from './AnnotationLabel';
 
-import model from '../resources/models/model.glb';
-
 export default function Model(props) {
-    const DEBUG = true;
+    const modelURL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
+    const DEBUG = false;
     const modelRef1 = React.useRef();
     const [mouseDownCoords, setMouseDownCords] = useState(null);
 
@@ -19,7 +18,7 @@ export default function Model(props) {
     const mouseDownToClickMaxDist = window.innerHeight * 0.01;
 
     const handleMouseDown = (event) => {
-        console.log('Mouse down event: Setting mouse down coords to: ', {x: event.clientX, y: event.clientY});
+        if (DEBUG) { console.log('Mouse down event: Setting mouse down coords to: ', {x: event.clientX, y: event.clientY}); }
         setMouseDownCords({x: event.clientX, y: event.clientY});
     }
 
@@ -28,7 +27,7 @@ export default function Model(props) {
             return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
         }
 
-        console.error('Cannot calculate distance, something is not defined ');
+        if (DEBUG) { console.error('Cannot calculate distance, something is not defined '); }
     }
 
     const handleModelClick = (event) => {
@@ -36,8 +35,8 @@ export default function Model(props) {
 
         const mouseDownToClickDist = calculateDistance({x: clientX, y: clientY}, {x: mouseDownCoords.x, y: mouseDownCoords.y});
         setMouseDownCords(null);
-        console.log('distance: ', mouseDownToClickDist);
-        console.log('max distance: ', mouseDownToClickMaxDist);
+        if (DEBUG) { console.log('distance: ', mouseDownToClickDist); }
+        if (DEBUG) { console.log('max distance: ', mouseDownToClickMaxDist); }
         if ( mouseDownToClickDist > mouseDownToClickMaxDist) {
             if(DEBUG) {
                 console.log('clientX: ', clientX, ', clientY: ', ', mouseDownCoords.x: ', mouseDownCoords.x, ' , mouseDownCoords.y: ', mouseDownCoords.y, ' , distance: ', mouseDownToClickDist);
@@ -60,7 +59,7 @@ export default function Model(props) {
         if (event) {
             event.stopPropagation();
 
-            console.log("Delete clicked. id: ", id);
+            if (DEBUG) { console.log("Delete clicked. id: ", id); }
             if (id) {
                 props.deleteDataById(id);
             }
@@ -149,16 +148,11 @@ export default function Model(props) {
         /> :
         null;
         
-    
-    useEffect(() => {
-        console.log('useEffect')
-        console.log(props.data)
-    })
 
     return (
         <div className="model">
             <model-viewer 
-                src={model} 
+                src={modelURL} 
                 ar-modes="webxr scene-viewer quick-look" 
                 camera-controls poster="poster.webp" 
                 shadow-intensity="1"
