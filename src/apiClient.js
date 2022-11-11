@@ -1,6 +1,7 @@
 
 async function dynamoDbOperation(operation, payload = {}) {
     const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
+    const DEBUG = false;
     
     if (
         (operation !== 'list') &&
@@ -8,7 +9,7 @@ async function dynamoDbOperation(operation, payload = {}) {
         (operation !== 'delete') &&
         (operation !== 'update')
         ) {
-            console.log('Invalid dynamo operation.');
+            if (DEBUG) { console.log('Invalid dynamo operation.'); }
         return null;
     }
     

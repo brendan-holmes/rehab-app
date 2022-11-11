@@ -4,7 +4,7 @@ import { list, remove, put } from '../apiClient';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function ModelWithData (props) {
-    const DEBUG = true;
+    const DEBUG = false;
     const [data, setData] = useState([]);
     const [tempAnnotation, setTempAnnotation] = useState({});
     const [labelInEdit, setLabelInEdit] = useState(null);
@@ -50,7 +50,7 @@ export default function ModelWithData (props) {
     }
 
     const nameTempAnnotation = (annotation) => {
-        console.log('Name Temp Annotation');
+        if (DEBUG) { console.log('Name Temp Annotation'); }
         persistAnnotation(tempAnnotation);
         setTempAnnotation({});
     }
