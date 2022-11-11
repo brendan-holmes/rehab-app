@@ -6,7 +6,7 @@ import AnnotationLabel from './AnnotationLabel';
 
 export default function Model(props) {
     const modelURL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
-    const DEBUG = false;
+    const DEBUG = true;
     const modelRef1 = React.useRef();
     const [mouseDownCoords, setMouseDownCords] = useState(null);
 
@@ -115,8 +115,9 @@ export default function Model(props) {
                         dataPosition = {getDataPositionWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation.name.length), y: 1, z: 0})}
                         dataNormal = {getDataNormal(annotation)}
                         handleDeleteClick = {handleDeleteClick}
-                        isInEdit = {props.labelInEdit === annotation.uuid}
+                        handleRename = {props.handleRename}
                         handleClick = {props.handleLabelClick}
+                        isInEdit = {props.labelInEdit === annotation.uuid}
                     />
                 )
             } else {

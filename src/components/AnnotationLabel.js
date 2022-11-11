@@ -28,6 +28,7 @@ export default function AnnotationLabel(props) {
     }
 
     const handleSaveRename = (event) => {
+        console.log('Saving name');
         props.annotation.name = inputValue;
         props.handleRename(props.annotation);
     }

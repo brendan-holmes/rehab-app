@@ -49,9 +49,9 @@ export default function ModelWithData (props) {
         setLabelInEdit(dataPoint.uuid);
     }
 
-    const nameTempAnnotation = (annotation) => {
+    const updateAnnotationName = (annotation) => {
         if (DEBUG) { console.log('Name Temp Annotation'); }
-        persistAnnotation(tempAnnotation);
+        persistAnnotation(annotation);
         setTempAnnotation({});
     }
 
@@ -65,7 +65,10 @@ export default function ModelWithData (props) {
             console.log('Created UUID: ', annotationWithUuid.uuid);
         }
         setData((d) => {
-            newData = [...d, annotationWithUuid];
+            // In the case of an update, remove the existing version
+            newData = d.filter(a => a.uuid !== annotationWithUuid.uuid);
+            // append the new annotation or new verion to the data list
+            newData = [...newData, annotationWithUuid];
             if (DEBUG) {
                 console.log('Data:', newData);
             }
@@ -124,16 +127,6 @@ export default function ModelWithData (props) {
         return tempAnnotation.uuid && id && id === tempAnnotation.uuid;
     }
 
-    const buttonStyle = {
-        backgroundColor: '#FF0000',
-        background: 'linear-gradient(130deg, #CC00CC 33%, #CCCC11 85%, #00FFCC 100%)',
-        border: 'none',
-        color: 'white',
-        padding: '10px',
-        textDecoration: 'none',
-        margin: '4px 2px'
-    };
-
     return (
         <>
             <Model 
@@ -141,7 +134,7 @@ export default function ModelWithData (props) {
                 tempAnnotation={tempAnnotation}
                 handleModelClick={handleModelClick}
                 deleteDataById={deleteAnnotationById}
-                handleRename={nameTempAnnotation}
+                handleRename={updateAnnotationName}
                 handleBackgroundClick={handleBackgroundClick}
                 labelInEdit={labelInEdit}
                 handleLabelClick={handleLabelClick}
