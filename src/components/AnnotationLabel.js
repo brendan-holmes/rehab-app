@@ -15,9 +15,16 @@ export default function AnnotationLabel(props) {
         textDecoration: 'none',
         margin: '4px 2px'
     };
+
     const handleClick = (event) => {
         event.stopPropagation();
         props.handleClick(props.annotation.uuid);
+    }
+
+    const handleKeyUp = (event) => {
+        if (event && event.key === 'Enter') {
+            handleSaveRename(null);
+        }
     }
 
     const inputStyle = {
@@ -93,6 +100,7 @@ export default function AnnotationLabel(props) {
             data-normal = {props.dataNormal}
             style = {labelStyle}
             onClick={handleClick}
+            onKeyUp={handleKeyUp}
         >
             {text}
             {tick}
