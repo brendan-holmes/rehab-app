@@ -48,6 +48,7 @@ export default function ModelWithData (props) {
     const addTempAnnotation = (dataPoint) => {
         log("Setting temp annotation: ", dataPoint);
         dataPoint.uuid = uuidv4();
+        dataPoint.timestamp = new Date().toUTCString();
         setTempAnnotation(dataPoint);
         setLabelInEdit(dataPoint.uuid);
     }
