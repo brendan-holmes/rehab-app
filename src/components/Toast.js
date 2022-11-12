@@ -13,7 +13,7 @@ const Toast = (props) => {
 
     useEffect(() => {
         // todo: delete toast from list instead of just hiding
-        // setTimeout(() => setShowToast(false), 5000);
+        setTimeout(() => setShowToast(false), 5000);
     }, [])
 
     let imgSrc;
