@@ -2,9 +2,9 @@ import Model from './model';
 import { useEffect, useState } from 'react';
 import { list, remove, put } from '../apiClient';
 import { v4 as uuidv4 } from 'uuid';
+import { log, error } from '../logging';
 
 export default function ModelWithData (props) {
-    const DEBUG = false;
     const [data, setData] = useState([]);
     const [tempAnnotation, setTempAnnotation] = useState({});
     const [labelInEdit, setLabelInEdit] = useState(null);
@@ -14,19 +14,21 @@ export default function ModelWithData (props) {
           list()
             .then(response => response.json())
             .then(data => {
-                if (DEBUG) {
-                    console.log('Got data from api.list(): ', data);
-                }
+                log('Got data from api.list(): ', data);
                 setData(data.Items);
                 props.addToast({"message": `Data refreshed`, "type": "success"});
             })
             .catch(error => props.addToast({"message": `Unable to refresh data: ${error.message}`, "type": "error"}));
-          props.setLastUpdated(new Date());
           props.setIsListRefreshRequired(false);
         }
       });
     
     const handleModelClick = (annotation) => {
+        if (labelInEdit) {
+            setLabelInEdit(null);
+            setTempAnnotation({});
+            return;
+        }
         addTempAnnotation(annotation);
     }
 
@@ -42,49 +44,46 @@ export default function ModelWithData (props) {
     // Every annotation is first added as a temporary annotation,
     // and then gets persisted once it has been named
     const addTempAnnotation = (dataPoint) => {
-        if(DEBUG) {console.log("Setting temp annotation: ", dataPoint) }
-        dataPoint.name = "Unnamed injury";
+        log("Setting temp annotation: ", dataPoint);
         dataPoint.uuid = uuidv4();
+        dataPoint.timestamp = new Date().toUTCString();
         setTempAnnotation(dataPoint);
         setLabelInEdit(dataPoint.uuid);
     }
-
-    const updateAnnotationName = (annotation) => {
-        if (DEBUG) { console.log('Name Temp Annotation'); }
+    
+    const updateAnnotation = (annotation) => {
+        log('Name Temp Annotation');
         persistAnnotation(annotation);
         setTempAnnotation({});
     }
-
+    
     const persistAnnotation = (annotationWithUuid) => {
         if (!annotationWithUuid.uuid) {
-            if (DEBUG) { console.error('Attempting to persist an annotation that doesn\'t have a uuid.'); }
+            error('Attempting to persist an annotation that doesn\'t have a uuid.');
             return;
         }
-        let newData;
-        if (DEBUG) {
-            console.log('Created UUID: ', annotationWithUuid.uuid);
+        if (!annotationWithUuid.name) {
+            annotationWithUuid.name = "Unnamed injury";
         }
+        let newData;
+        log('Created UUID: ', annotationWithUuid.uuid);
         setData((d) => {
             // In the case of an update, remove the existing version
             newData = d.filter(a => a.uuid !== annotationWithUuid.uuid);
-            // append the new annotation or new verion to the data list
+            // append the new annotation or new version to the data list
             newData = [...newData, annotationWithUuid];
-            if (DEBUG) {
-                console.log('Data:', newData);
-            }
+            log('Data:', newData);
 
             return newData;
         });
         put(annotationWithUuid, annotationWithUuid.uuid)
             .then(response => response.json())
             .then((responseJson) => {
-                if (DEBUG) {
-                    console.log('Put data with api.put(). Response: ', responseJson);
-                }
+                log('Put data with api.put(). Response: ', responseJson);
                 if (responseJson.errorMessage) {
                     throw new Error(responseJson.errorMessage)
                 }
-                props.addToast({"message": `Added item`, "type": "success"})
+                props.addToast({"message": `Added injury`, "type": "success"})
             })
             .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error.message}`, "type": "error"}));
         setLabelInEdit(null);
@@ -93,32 +92,28 @@ export default function ModelWithData (props) {
 
     const deleteAnnotationById = (id) => {
         if (isTempAnnotation(id)) {
-            if (DEBUG) {
-                console.log('Removing temp annotation');
-            }
+            log('Removing temp annotation');
             setTempAnnotation({});
             return;
         }
 
-        if(DEBUG) {console.log("deleteDataById: ", id) }
+        log("deleteDataById: ", id);
         const name = data.filter(a => a.uuid === id)[0].name || 'injury';
-        if(DEBUG) {console.log("deleteDataById: ", id) }
+        log("deleteDataById: ", id);
         if (!window.confirm(`Delete ${name}?`)) {
-            if(DEBUG) {console.log("Deletion cancelled by user: ", id) }
+            log("Deletion cancelled by user: ", id);
             return;
         }
         let newData;
         setData((d) => {
             newData = d.filter(a => a.uuid !== id);
-            if (DEBUG) {
-                console.log('Removed annotation: ', id);
-                console.log('annotations:', newData);
-            }
+            log('Removed annotation: ', id);
+            log('annotations:', newData);
             return newData;
         });
         remove(id)
             .then(response => response.json())
-            .then(() => props.addToast({"message": `Item deleted`, "type": "success"}))
+            .then(() => props.addToast({"message": `Deleted injury`, "type": "success"}))
             .catch(error => props.addToast({"message": `An error occurred: ${error.message}`, "type": "error"}));
         return newData;
     }
@@ -134,7 +129,7 @@ export default function ModelWithData (props) {
                 tempAnnotation={tempAnnotation}
                 handleModelClick={handleModelClick}
                 deleteDataById={deleteAnnotationById}
-                handleRename={updateAnnotationName}
+                handleRename={updateAnnotation}
                 handleBackgroundClick={handleBackgroundClick}
                 labelInEdit={labelInEdit}
                 handleLabelClick={handleLabelClick}

@@ -1,24 +1,23 @@
 import '@google/model-viewer/dist/model-viewer';
-import React, { useEffect, useState } from 'react';
-
+import React, { useState } from 'react';
+import { log, error } from '../logging';
 import Annotation from './Annotation';
 import AnnotationLabel from './AnnotationLabel';
 
 export default function Model(props) {
     const modelURL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
-    const DEBUG = true;
     const modelRef1 = React.useRef();
     const [mouseDownCoords, setMouseDownCords] = useState(null);
 
     const getLabelDistanceToAnnotation = (numberOfCharacters) => {
-        const multiplier = 0.18;
-        return (18 + numberOfCharacters) * multiplier;
+        const multiplier = 0.25;
+        return (13 + numberOfCharacters) * multiplier;
     }
 
     const mouseDownToClickMaxDist = window.innerHeight * 0.01;
 
     const handleMouseDown = (event) => {
-        if (DEBUG) { console.log('Mouse down event: Setting mouse down coords to: ', {x: event.clientX, y: event.clientY}); }
+        log('Mouse down event: Setting mouse down coords to: ', {x: event.clientX, y: event.clientY});
         setMouseDownCords({x: event.clientX, y: event.clientY});
     }
 
@@ -27,7 +26,7 @@ export default function Model(props) {
             return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
         }
 
-        if (DEBUG) { console.error('Cannot calculate distance, something is not defined '); }
+        error('Cannot calculate distance, something is not defined ');
     }
 
     const handleModelClick = (event) => {
@@ -35,13 +34,11 @@ export default function Model(props) {
 
         const mouseDownToClickDist = calculateDistance({x: clientX, y: clientY}, {x: mouseDownCoords.x, y: mouseDownCoords.y});
         setMouseDownCords(null);
-        if (DEBUG) { console.log('distance: ', mouseDownToClickDist); }
-        if (DEBUG) { console.log('max distance: ', mouseDownToClickMaxDist); }
+        log('distance: ', mouseDownToClickDist);
+        log('max distance: ', mouseDownToClickMaxDist);
         if ( mouseDownToClickDist > mouseDownToClickMaxDist) {
-            if(DEBUG) {
-                console.log('clientX: ', clientX, ', clientY: ', ', mouseDownCoords.x: ', mouseDownCoords.x, ' , mouseDownCoords.y: ', mouseDownCoords.y, ' , distance: ', mouseDownToClickDist);
-                console.log('Click start and end point too far away.')
-            };
+            log('clientX: ', clientX, ', clientY: ', ', mouseDownCoords.x: ', mouseDownCoords.x, ' , mouseDownCoords.y: ', mouseDownCoords.y, ' , distance: ', mouseDownToClickDist);
+            log('Click start and end point too far away.')
             return;
         }
 
@@ -59,7 +56,7 @@ export default function Model(props) {
         if (event) {
             event.stopPropagation();
 
-            if (DEBUG) { console.log("Delete clicked. id: ", id); }
+            log("Delete clicked. id: ", id);
             if (id) {
                 props.deleteDataById(id);
             }
@@ -105,6 +102,8 @@ export default function Model(props) {
         })
         : null;
 
+    
+
     const annotationLabels = props.data ? 
         props.data.map((annotation, idx) => {
             if (annotation && annotation.uuid) {
@@ -112,7 +111,7 @@ export default function Model(props) {
                     <AnnotationLabel 
                         key = {`${annotation.uuid}-annotation-label`}
                         annotation = {annotation}
-                        dataPosition = {getDataPositionWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation.name.length), y: 1, z: 0})}
+                        dataPosition = {getDataPositionWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation?.name?.length || 0), y: 1, z: 0})}
                         dataNormal = {getDataNormal(annotation)}
                         handleDeleteClick = {handleDeleteClick}
                         handleRename = {props.handleRename}
@@ -140,7 +139,7 @@ export default function Model(props) {
         <AnnotationLabel 
             key = {`${props.tempAnnotation.uuid}-annotation-label`}
             annotation = {props.tempAnnotation}
-            dataPosition = {getDataPositionWithOffset(props.tempAnnotation, {x:getLabelDistanceToAnnotation(props.tempAnnotation.name.length), y: 1, z: 0})}
+            dataPosition = {getDataPositionWithOffset(props.tempAnnotation, {x:getLabelDistanceToAnnotation(props?.tempAnnotation?.name?.length || 0), y: 1, z: 0})}
             dataNormal = {getDataNormal(props.tempAnnotation)}
             handleDeleteClick = {handleDeleteClick}
             handleRename = {props.handleRename}

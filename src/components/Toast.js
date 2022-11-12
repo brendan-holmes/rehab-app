@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import infoIcon from './../resources/icons/info.png';
 import checkIcon from './../resources/icons/check.png';
 import errorIcon from './../resources/icons/exclamation.png';
+import { log } from '../logging';
 
 const Toast = (props) => {
     const [showToast, setShowToast] = useState(true);
@@ -9,7 +9,7 @@ const Toast = (props) => {
         setShowToast(false);
     }
 
-    // console.log("Toast - ", "message: ", props.message, ", type: ", props.type, ", show: ", showToast);
+    log("Toast - ", "message: ", props.message, ", type: ", props.type, ", show: ", showToast);
 
     useEffect(() => {
         // todo: delete toast from list instead of just hiding

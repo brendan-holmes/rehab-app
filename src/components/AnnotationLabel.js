@@ -1,6 +1,5 @@
-import deleteIcon from './../resources/icons/x.png';
-import tickIcon from './../resources/icons/tick.png';
 import { useState, useEffect } from 'react';
+import { log } from '../logging';
 
 export default function AnnotationLabel(props) {
     const [inputValue, setInputValue] = useState(props.annotation.name || '');
@@ -14,9 +13,16 @@ export default function AnnotationLabel(props) {
         textDecoration: 'none',
         margin: '4px 2px'
     };
+
     const handleClick = (event) => {
         event.stopPropagation();
         props.handleClick(props.annotation.uuid);
+    }
+
+    const handleKeyUp = (event) => {
+        if (event && event.key === 'Enter') {
+            handleSaveRename(null);
+        }
     }
 
     const inputStyle = {
@@ -28,7 +34,7 @@ export default function AnnotationLabel(props) {
     }
 
     const handleSaveRename = (event) => {
-        console.log('Saving name');
+        log('Saving name');
         props.annotation.name = inputValue;
         props.handleRename(props.annotation);
     }
@@ -37,7 +43,15 @@ export default function AnnotationLabel(props) {
         setInputValue(event.target.value);
     }
 
-    const labelText = <span className='annotation-label-text'>{props.annotation.name || "This injury has no name" }</span>;
+    const capitalizeFirstLetter = (string) => {
+        if (string && string.length > 0) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        log('Capitalize First Letter: input string is not valid: ', string);
+        return string;
+      }
+
+    const labelText = <span className='annotation-label-text'>{capitalizeFirstLetter(props.annotation.name) || '' }</span>;
     const labelInput = 
         <span>
             <input 
@@ -52,27 +66,23 @@ export default function AnnotationLabel(props) {
     const text = props.isInEdit ? labelInput: labelText;
 
     const tick = props.isInEdit ? 
-        <img 
-            className="annotation-label-button" 
-            src={tickIcon} 
-            alt="" 
+        <span 
+            className="annotation-label-save-button" 
             onClick={(e) => {
                 e.stopPropagation();
                 handleSaveRename(e);
             }}
-        />
-    : null;
+        >Save</span>
+        : null;
 
-    const cross = 
-        <img 
-            className="annotation-label-button" 
-            src={deleteIcon} 
-            alt="" 
+    const cross = props.isInEdit ? null :
+        <span 
+            className="annotation-label-cross-button"
             onClick={(e) => {
                 e.stopPropagation();
                 props.handleDeleteClick(e, props.annotation.uuid);
             }}
-        />
+        >×</span>;
 
     useEffect(() => {
         if (props.isInEdit) {
@@ -92,6 +102,7 @@ export default function AnnotationLabel(props) {
             data-normal = {props.dataNormal}
             style = {labelStyle}
             onClick={handleClick}
+            onKeyUp={handleKeyUp}
         >
             {text}
             {tick}
