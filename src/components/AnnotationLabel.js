@@ -1,5 +1,3 @@
-import deleteIcon from './../resources/icons/x.png';
-import tickIcon from './../resources/icons/tick.png';
 import { useState, useEffect } from 'react';
 import { log } from '../logging';
 
@@ -49,7 +47,7 @@ export default function AnnotationLabel(props) {
         if (string && string.length > 0) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
-        log('Capitalize First Letter: inputstring is not valid: ', string);
+        log('Capitalize First Letter: input string is not valid: ', string);
         return string;
       }
 
@@ -68,27 +66,23 @@ export default function AnnotationLabel(props) {
     const text = props.isInEdit ? labelInput: labelText;
 
     const tick = props.isInEdit ? 
-        <img 
-            className="annotation-label-button" 
-            src={tickIcon} 
-            alt="" 
+        <span 
+            className="annotation-label-save-button" 
             onClick={(e) => {
                 e.stopPropagation();
                 handleSaveRename(e);
             }}
-        />
-    : null;
+        >Save</span>
+        : null;
 
-    const cross = 
-        <img 
-            className="annotation-label-button" 
-            src={deleteIcon} 
-            alt="" 
+    const cross = props.isInEdit ? null :
+        <span 
+            className="annotation-label-cross-button"
             onClick={(e) => {
                 e.stopPropagation();
                 props.handleDeleteClick(e, props.annotation.uuid);
             }}
-        />
+        >×</span>;
 
     useEffect(() => {
         if (props.isInEdit) {
