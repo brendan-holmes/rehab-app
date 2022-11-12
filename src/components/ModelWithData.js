@@ -27,6 +27,11 @@ export default function ModelWithData (props) {
       });
     
     const handleModelClick = (annotation) => {
+        if (labelInEdit) {
+            setLabelInEdit(null);
+            setTempAnnotation({});
+            return;
+        }
         addTempAnnotation(annotation);
     }
 
