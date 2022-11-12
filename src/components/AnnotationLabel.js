@@ -46,7 +46,11 @@ export default function AnnotationLabel(props) {
     }
 
     const capitalizeFirstLetter = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1);
+        if (string && string.length > 0) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        log('Capitalize First Letter: inputstring is not valid: ', string);
+        return string;
       }
 
     const labelText = <span className='annotation-label-text'>{capitalizeFirstLetter(props.annotation.name) || '' }</span>;
