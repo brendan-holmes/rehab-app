@@ -45,7 +45,11 @@ export default function AnnotationLabel(props) {
         setInputValue(event.target.value);
     }
 
-    const labelText = <span className='annotation-label-text'>{props.annotation.name || "This injury has no name" }</span>;
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+      }
+
+    const labelText = <span className='annotation-label-text'>{capitalizeFirstLetter(props.annotation.name) || '' }</span>;
     const labelInput = 
         <span>
             <input 
