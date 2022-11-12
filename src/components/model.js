@@ -105,6 +105,8 @@ export default function Model(props) {
         })
         : null;
 
+    
+
     const annotationLabels = props.data ? 
         props.data.map((annotation, idx) => {
             if (annotation && annotation.uuid) {
@@ -112,7 +114,7 @@ export default function Model(props) {
                     <AnnotationLabel 
                         key = {`${annotation.uuid}-annotation-label`}
                         annotation = {annotation}
-                        dataPosition = {getDataPositionWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation.name.length), y: 1, z: 0})}
+                        dataPosition = {getDataPositionWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation?.name?.length || 0), y: 1, z: 0})}
                         dataNormal = {getDataNormal(annotation)}
                         handleDeleteClick = {handleDeleteClick}
                         handleRename = {props.handleRename}
@@ -140,7 +142,7 @@ export default function Model(props) {
         <AnnotationLabel 
             key = {`${props.tempAnnotation.uuid}-annotation-label`}
             annotation = {props.tempAnnotation}
-            dataPosition = {getDataPositionWithOffset(props.tempAnnotation, {x:getLabelDistanceToAnnotation(props.tempAnnotation.name.length), y: 1, z: 0})}
+            dataPosition = {getDataPositionWithOffset(props.tempAnnotation, {x:getLabelDistanceToAnnotation(props?.tempAnnotation?.name?.length || 0), y: 1, z: 0})}
             dataNormal = {getDataNormal(props.tempAnnotation)}
             handleDeleteClick = {handleDeleteClick}
             handleRename = {props.handleRename}

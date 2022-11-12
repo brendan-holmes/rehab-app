@@ -43,22 +43,24 @@ export default function ModelWithData (props) {
     // and then gets persisted once it has been named
     const addTempAnnotation = (dataPoint) => {
         if(DEBUG) {console.log("Setting temp annotation: ", dataPoint) }
-        dataPoint.name = "Unnamed injury";
         dataPoint.uuid = uuidv4();
         setTempAnnotation(dataPoint);
         setLabelInEdit(dataPoint.uuid);
     }
-
-    const updateAnnotationName = (annotation) => {
+    
+    const updateAnnotation = (annotation) => {
         if (DEBUG) { console.log('Name Temp Annotation'); }
         persistAnnotation(annotation);
         setTempAnnotation({});
     }
-
+    
     const persistAnnotation = (annotationWithUuid) => {
         if (!annotationWithUuid.uuid) {
             if (DEBUG) { console.error('Attempting to persist an annotation that doesn\'t have a uuid.'); }
             return;
+        }
+        if (!annotationWithUuid.name) {
+            annotationWithUuid.name = "Unnamed injury";
         }
         let newData;
         if (DEBUG) {
@@ -134,7 +136,7 @@ export default function ModelWithData (props) {
                 tempAnnotation={tempAnnotation}
                 handleModelClick={handleModelClick}
                 deleteDataById={deleteAnnotationById}
-                handleRename={updateAnnotationName}
+                handleRename={updateAnnotation}
                 handleBackgroundClick={handleBackgroundClick}
                 labelInEdit={labelInEdit}
                 handleLabelClick={handleLabelClick}
