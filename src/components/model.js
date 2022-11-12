@@ -10,8 +10,8 @@ export default function Model(props) {
     const [mouseDownCoords, setMouseDownCords] = useState(null);
 
     const getLabelDistanceToAnnotation = (numberOfCharacters) => {
-        const multiplier = 0.18;
-        return (18 + numberOfCharacters) * multiplier;
+        const multiplier = 0.25;
+        return (13 + numberOfCharacters) * multiplier;
     }
 
     const mouseDownToClickMaxDist = window.innerHeight * 0.01;

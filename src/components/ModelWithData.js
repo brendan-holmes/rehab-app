@@ -83,7 +83,7 @@ export default function ModelWithData (props) {
                 if (responseJson.errorMessage) {
                     throw new Error(responseJson.errorMessage)
                 }
-                props.addToast({"message": `Added item`, "type": "success"})
+                props.addToast({"message": `Added injury`, "type": "success"})
             })
             .catch(error => props.addToast({"title": "Error", "message": `An error occurred: ${error.message}`, "type": "error"}));
         setLabelInEdit(null);
@@ -113,7 +113,7 @@ export default function ModelWithData (props) {
         });
         remove(id)
             .then(response => response.json())
-            .then(() => props.addToast({"message": `Item deleted`, "type": "success"}))
+            .then(() => props.addToast({"message": `Deleted injury`, "type": "success"}))
             .catch(error => props.addToast({"message": `An error occurred: ${error.message}`, "type": "error"}));
         return newData;
     }
