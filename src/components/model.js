@@ -1,13 +1,11 @@
 import '@google/model-viewer/dist/model-viewer';
 import React, { useState } from 'react';
 import { log, error } from '../logging';
-
 import Annotation from './Annotation';
 import AnnotationLabel from './AnnotationLabel';
 
 export default function Model(props) {
     const modelURL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
-    const DEBUG = true;
     const modelRef1 = React.useRef();
     const [mouseDownCoords, setMouseDownCords] = useState(null);
 

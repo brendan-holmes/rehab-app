@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import infoIcon from './../resources/icons/info.png';
 import checkIcon from './../resources/icons/check.png';
 import errorIcon from './../resources/icons/exclamation.png';
 import { log } from '../logging';

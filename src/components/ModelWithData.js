@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { log, error } from '../logging';
 
 export default function ModelWithData (props) {
-    const DEBUG = false;
     const [data, setData] = useState([]);
     const [tempAnnotation, setTempAnnotation] = useState({});
     const [labelInEdit, setLabelInEdit] = useState(null);
@@ -20,7 +19,6 @@ export default function ModelWithData (props) {
                 props.addToast({"message": `Data refreshed`, "type": "success"});
             })
             .catch(error => props.addToast({"message": `Unable to refresh data: ${error.message}`, "type": "error"}));
-          props.setLastUpdated(new Date());
           props.setIsListRefreshRequired(false);
         }
       });
@@ -72,7 +70,7 @@ export default function ModelWithData (props) {
         setData((d) => {
             // In the case of an update, remove the existing version
             newData = d.filter(a => a.uuid !== annotationWithUuid.uuid);
-            // append the new annotation or new verion to the data list
+            // append the new annotation or new version to the data list
             newData = [...newData, annotationWithUuid];
             log('Data:', newData);
 
