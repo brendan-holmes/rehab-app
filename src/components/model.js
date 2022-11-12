@@ -1,5 +1,6 @@
 import '@google/model-viewer/dist/model-viewer';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { log, error } from '../logging';
 
 import Annotation from './Annotation';
 import AnnotationLabel from './AnnotationLabel';
@@ -18,7 +19,7 @@ export default function Model(props) {
     const mouseDownToClickMaxDist = window.innerHeight * 0.01;
 
     const handleMouseDown = (event) => {
-        if (DEBUG) { console.log('Mouse down event: Setting mouse down coords to: ', {x: event.clientX, y: event.clientY}); }
+        log('Mouse down event: Setting mouse down coords to: ', {x: event.clientX, y: event.clientY});
         setMouseDownCords({x: event.clientX, y: event.clientY});
     }
 
@@ -27,7 +28,7 @@ export default function Model(props) {
             return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
         }
 
-        if (DEBUG) { console.error('Cannot calculate distance, something is not defined '); }
+        error('Cannot calculate distance, something is not defined ');
     }
 
     const handleModelClick = (event) => {
@@ -35,13 +36,11 @@ export default function Model(props) {
 
         const mouseDownToClickDist = calculateDistance({x: clientX, y: clientY}, {x: mouseDownCoords.x, y: mouseDownCoords.y});
         setMouseDownCords(null);
-        if (DEBUG) { console.log('distance: ', mouseDownToClickDist); }
-        if (DEBUG) { console.log('max distance: ', mouseDownToClickMaxDist); }
+        log('distance: ', mouseDownToClickDist);
+        log('max distance: ', mouseDownToClickMaxDist);
         if ( mouseDownToClickDist > mouseDownToClickMaxDist) {
-            if(DEBUG) {
-                console.log('clientX: ', clientX, ', clientY: ', ', mouseDownCoords.x: ', mouseDownCoords.x, ' , mouseDownCoords.y: ', mouseDownCoords.y, ' , distance: ', mouseDownToClickDist);
-                console.log('Click start and end point too far away.')
-            };
+            log('clientX: ', clientX, ', clientY: ', ', mouseDownCoords.x: ', mouseDownCoords.x, ' , mouseDownCoords.y: ', mouseDownCoords.y, ' , distance: ', mouseDownToClickDist);
+            log('Click start and end point too far away.')
             return;
         }
 
@@ -59,7 +58,7 @@ export default function Model(props) {
         if (event) {
             event.stopPropagation();
 
-            if (DEBUG) { console.log("Delete clicked. id: ", id); }
+            log("Delete clicked. id: ", id);
             if (id) {
                 props.deleteDataById(id);
             }

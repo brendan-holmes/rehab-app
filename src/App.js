@@ -7,6 +7,7 @@ import refreshIcon from './resources/icons/refresh.png';
 import { formatDate } from './dateUtils.js';
 import ModelWithData from './components/ModelWithData';
 import ErrorBoundary from './components/ErrorBoundary';
+import { log } from './logging';
 
 function App() {
   const [isListRefreshRequired, setIsListRefreshRequired] = useState(true);
@@ -20,7 +21,7 @@ function App() {
   useEffect(() => {
     if (false) {
       setInterval(() => {
-        console.log('Refreshing data...');
+        log('Refreshing data...');
         setIsListRefreshRequired(true);
       }, updatePeriodInMilliseconds)
     }

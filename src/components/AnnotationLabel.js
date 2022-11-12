@@ -1,6 +1,7 @@
 import deleteIcon from './../resources/icons/x.png';
 import tickIcon from './../resources/icons/tick.png';
 import { useState, useEffect } from 'react';
+import { log } from '../logging';
 
 export default function AnnotationLabel(props) {
     const [inputValue, setInputValue] = useState(props.annotation.name || '');
@@ -28,7 +29,7 @@ export default function AnnotationLabel(props) {
     }
 
     const handleSaveRename = (event) => {
-        console.log('Saving name');
+        log('Saving name');
         props.annotation.name = inputValue;
         props.handleRename(props.annotation);
     }
