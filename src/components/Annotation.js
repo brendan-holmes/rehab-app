@@ -1,5 +1,6 @@
 export default function Annotation(props) {
     const annotationStyle = {
+        background: '#D9594C',
         backgroundColor: '#04AA6D',
         border: 'none',
         color: 'white',

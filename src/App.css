@@ -40,13 +40,14 @@ ul.NavBar {
   /* Background */
   background: linear-gradient(
     130deg, 
-    #CC00CC 33%,
-    #CCCC11 85%, 
-    #00FFCC 100%
+    #D9594C 15%,
+    #E55934 30%,
+    #dcbb34 60%,
+    #cce046 100%
     );
   
   /* Text */
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 .NavBar li {
@@ -113,21 +114,18 @@ ul.NavBar {
 }
 
 .toast-red {
-  background: linear-gradient(
+  background: #bf0a0a;
+  
+  /* linear-gradient(
     130deg, 
     #bf0a0a 33%,
     #cc118e 85%, 
     #aa00ff 100%
-    );
+    ); */
 }
 
 .toast-green {
-  background: linear-gradient(
-    130deg, 
-    #09b600 33%,
-    #11bccc 85%, 
-    #0099ff 100%
-    );
+  background: #73da6e;
 }
 
 @keyframes toast-slide-up {
@@ -141,23 +139,23 @@ ul.NavBar {
 }
 
 .toast-icon {
-  height: 4vw;
-  width: 4vw;
-  margin-left: 2vw;
-  margin-right: 2vw;
+  height: 4vh;
+  width: 4vh;
+  margin-left: 2vh;
+  margin-right: 2vh;
   display: inline-block;
   vertical-align: middle;
 }
 
 .toast-content {
-  margin-left: 2vw;
-  margin-right: 2vw;
+  margin-left: 2vh;
+  margin-right: 2vh;
 }
 
 .toast button {
   /* Position */
-  margin-left: 2vw;
-  margin-right: 2vw;
+  margin-left: 2vh;
+  margin-right: 2vh;
   padding: 0;
   position: relative;
   outline: none;
