@@ -179,13 +179,12 @@ ul.NavBar {
 .annotation-label-save-button {
   float: right;
   padding: 5px;
-  margin-left: 2vw;
-  height: 4vw;
+  margin-left: 2vh;
+  height: 4vh;
 }
 
 .annotation-label-cross-button {
   font-size: x-large;
   float: right;
-  /* padding: 1vw; */
-  margin-left: 2vw;
+  margin-left: 1vh;
 }
