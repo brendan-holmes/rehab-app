@@ -6,12 +6,11 @@ export default function AnnotationLabel(props) {
 
     const labelStyle = {
         backgroundColor: '#FF0000',
-        background: 'linear-gradient(130deg, #CC00CC 33%, #CCCC11 85%, #00FFCC 100%)',
+        background: '#D9594C',
         border: 'none',
         color: 'white',
-        padding: '10px',
-        textDecoration: 'none',
-        margin: '4px 2px'
+        padding: '0.5vh 1vh',
+        textDecoration: 'none'
     };
 
     const handleClick = (event) => {
