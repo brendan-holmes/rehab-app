@@ -15,7 +15,7 @@ export default function ModelWithData (props) {
             .then(response => response.json())
             .then(data => {
                 log('Got data from api.list(): ', data);
-                setData(data.Items);
+                setData(data.Items || []);
                 props.addToast({"message": `Data refreshed`, "type": "success"});
             })
             .catch(error => props.addToast({"message": `Unable to refresh data: ${error.message}`, "type": "error"}));

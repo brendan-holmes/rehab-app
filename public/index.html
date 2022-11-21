@@ -28,6 +28,27 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <!-- Load the Google Sign-in client library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+      function handleCredentialResponse(response) {
+        console.log("Encoded JWT ID token: " + response.credential);
+        sessionStorage.setItem('userLoginJwt', JSON.stringify(response.credential))
+      }
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id: "85267952322-go49gqteqi6fc24ndqj6c8k7a6meop2f.apps.googleusercontent.com",
+          callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+          document.getElementById("buttonDiv"),
+          { theme: "outline", size: "large" }  // customization attributes
+        );
+        google.accounts.id.prompt(); // also display the One Tap dialog
+      }
+    </script>
+
     <div id="root"></div>
     <!--
       This HTML file is a template.

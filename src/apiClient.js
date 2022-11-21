@@ -1,4 +1,5 @@
 import { log } from './logging';
+import { Buffer } from 'buffer';
 
 async function dynamoDbOperation(operation, payload = {}) {
     const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
@@ -16,10 +17,16 @@ async function dynamoDbOperation(operation, payload = {}) {
     var headers = new Headers();
     headers.append('Content-Type', 'application/json');
     
+    const jwt = getJwt();
+    if (!jwt) {
+        return Promise.reject(new Error('Unauthorized'));
+    }
+
     var body = JSON.stringify({
         'operation': operation,
         'tableName': 'rehab-app',
-        'payload': payload
+        'payload': payload,
+        'jwt': jwt
     });
 
     var requestOptions = {
@@ -33,11 +40,25 @@ async function dynamoDbOperation(operation, payload = {}) {
 }
 
 function put(data, id) {
+    const jwt = getJwt();
+    if (!jwt) {
+        return Promise.reject(new Error('Cannot add new item: Unauthorized'));
+    }
+    const jwtDecoded = parseJwt(jwt);
+    if (!jwtDecoded) {
+        return Promise.reject(new Error('Cannot add new item: Unauthorized'));
+    }
+    const email = jwtDecoded.email;
+    if (!email) {
+        return Promise.reject(new Error('Cannot add new item: Unauthorized'));
+    }
+
     if (data && id) {
         const payload = {
             'Item': {
                 ...data,
-                'id': id
+                'id': id,
+                'email': email
             },
             
         }
@@ -48,10 +69,20 @@ function put(data, id) {
 }
 
 function list() {
+    const jwt = getJwt();
+    if (!jwt) {
+        return Promise.reject(new Error('Cannot get list: Unauthorized'));
+    }
+
     return dynamoDbOperation('list');
 }
 
 function remove(id) {
+    const jwt = getJwt();
+    if (!jwt) {
+        return Promise.reject(new Error('Cannot remove item: Unauthorized'));
+    }
+
     if (id) {
         const payload = {
             'Key': { 'id': id }
@@ -62,21 +93,24 @@ function remove(id) {
     }
 }
 
-function update(data) {
-    if (data.id) {
-        const payload = {
-            'Key': { 'id': data.id },
-            'UpdateExpression': 'set A= :a, B = :b',
-            'ExpressionAttributeValues':
-            {
-                ':a': data.A,
-                ':b': data.B
-            }
+function getJwt() {
+    const data = sessionStorage.getItem('userLoginJwt');
+
+    if (data) {
+        const jwt = JSON.parse(data);
+
+        if (jwt) {
+            return jwt;
         }
-        return dynamoDbOperation('update', payload);    
-    } else {
-        return Promise.reject(new Error("Cannot update"));
+
+        return null;
     }
+
+    return null;
 }
 
-export { put, list, remove, update };
+function parseJwt (token) {
+    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+}
+
+export { put, list, remove };

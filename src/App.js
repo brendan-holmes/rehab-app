@@ -5,6 +5,7 @@ import NavBar from './components/NavBar';
 import ToastContainer from './components/ToastContainer';
 import ModelWithData from './components/ModelWithData';
 import ErrorBoundary from './components/ErrorBoundary';
+import SignInWithGoogle from './components/SignInWithGoogle';
 
 function App() {
   const [isListRefreshRequired, setIsListRefreshRequired] = useState(true);
@@ -18,6 +19,7 @@ function App() {
     <div className="App">
       <NavBar>
         <li>Rehab App</li>
+        <li><SignInWithGoogle /></li>
       </NavBar>
 
       <ErrorBoundary errorMessage={"Unable to load model"}>
