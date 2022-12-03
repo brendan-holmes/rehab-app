@@ -1,5 +1,5 @@
 import { log } from './logging';
-import { Buffer } from 'buffer';
+import { getJwt, parseJwt } from './identity';
 
 async function dynamoDbOperation(operation, payload = {}) {
     const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
@@ -91,26 +91,6 @@ function remove(id) {
     } else {
         return Promise.reject(new Error('Cannot remove'));
     }
-}
-
-function getJwt() {
-    const data = sessionStorage.getItem('userLoginJwt');
-
-    if (data) {
-        const jwt = JSON.parse(data);
-
-        if (jwt) {
-            return jwt;
-        }
-
-        return null;
-    }
-
-    return null;
-}
-
-function parseJwt (token) {
-    return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 }
 
 export { put, list, remove };
