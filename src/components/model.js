@@ -102,8 +102,6 @@ export default function Model(props) {
         })
         : null;
 
-    
-
     const annotationLabels = props.data ? 
         props.data.map((annotation, idx) => {
             if (annotation && annotation.uuid) {

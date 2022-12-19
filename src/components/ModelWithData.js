@@ -1,4 +1,4 @@
-import Model from './model';
+import Model from './Model';
 import { useEffect, useState } from 'react';
 import { list, remove, put } from '../apiClient';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,7 +15,7 @@ export default function ModelWithData (props) {
             .then(response => response.json())
             .then(data => {
                 log('Got data from api.list(): ', data);
-                setData(data.Items);
+                setData(data.Items || []);
                 props.addToast({"message": `Data refreshed`, "type": "success"});
             })
             .catch(error => props.addToast({"message": `Unable to refresh data: ${error.message}`, "type": "error"}));
