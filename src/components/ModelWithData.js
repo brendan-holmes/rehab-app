@@ -1,4 +1,4 @@
-import Model from './Model';
+import Model from './Model2';
 import { useEffect, useState } from 'react';
 import { list, remove, put } from '../apiClient';
 import { v4 as uuidv4 } from 'uuid';
