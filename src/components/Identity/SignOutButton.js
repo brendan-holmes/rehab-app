@@ -7,6 +7,8 @@ export default function SignOut(props) {
     }
 
     return (
-        <button onClick={handleSignOut}>Sign out</button>
+        <button onClick={handleSignOut} className="sign-out-button">
+            Sign out
+        </button>
     )
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useScript from '../../hooks/useScript';
 import { signIn } from '../../identity';
+import Loading from '../Loading';
 
 export default function SignInWithGoogle(props) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -33,7 +34,7 @@ export default function SignInWithGoogle(props) {
     return (
         // todo: replace loading text with loading icon
         <>
-            { isLoaded ? <div id="googleSignInButtonDiv"></div> : 'Loading sign in with Google' }
+            { isLoaded ? <div id="googleSignInButtonDiv"></div> : <Loading /> }
         </>
     )
 }

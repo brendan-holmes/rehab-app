@@ -1,50 +1,16 @@
-import { findByLabelText } from '@testing-library/react';
-
 export default function Modal(props) {
 
-    const outsideAreaStyle = {
-        position: 'fixed',
-        height: '100vh',
-        width: '100vw',
-        background: 'rgba(190, 190, 190, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-    };
-
-    const insideAreaStyle = {
-        padding: '2vh',
-        background: 'white',
-        borderRadius: '5px',
-        height: '50vh',
-        width: '50vw',
-        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
-        // display: 'flow'
-    };
-
-    const contentAreaStyle = {
-        padding: '5vh',
-        display: 'flex',
-        justifyContent: 'space-between',
-        flexDirection: 'column',
-        alignItems: 'center',
-        height: '100%'
-    }
-
-    const buttonStyle = {
-        display: 'block',
-        marginLeft: 'auto',
-        marginRight: '0'
-    }
-
     return (
-        <div style={outsideAreaStyle} onClick={props.handleClose}>
+        <div 
+            onClick={props.handleClose}
+            className="modal-outside-area"
+            >
 
-            <div style={insideAreaStyle}>
+            <div className="modal-inside-area">
 
-                <button onClick={props.handleClose} style={buttonStyle}>Close ✕</button>
+                <button onClick={props.handleClose} className="modal-button">Close ✕</button>
 
-                <div style={contentAreaStyle}>
+                <div className="modal-content-area">
 
                     {props.children}
 

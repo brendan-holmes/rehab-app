@@ -12,7 +12,7 @@ export default function SignInModal(props) {
           <SignInWithGoogle handleSignIn={props.handleSignIn} />
 
           <div>
-            Choose a method to sign in
+            Sign in with Google to get started
           </div>
 
         </Modal>
