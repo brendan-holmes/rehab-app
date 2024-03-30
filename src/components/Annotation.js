@@ -12,9 +12,9 @@ export default function Annotation(props) {
 
     return  (
         <button
-            id = {props.annotation.uuid}
+            id = {props.annotation.id}
             className = "view-button"
-            slot = {`hotspot-${props.annotation.uuid}`}
+            slot = {`hotspot-${props.annotation.id}`}
             data-position = {props.dataPosition}
             data-normal = {props.dataNormal}
             style = {annotationStyle}

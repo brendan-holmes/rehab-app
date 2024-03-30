@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { log } from './logging';
+import { logInfo } from './logging';
 
 function getJwt() {
     // todo: use cookie
@@ -23,14 +23,14 @@ function parseJwt (token) {
 }
 
 function signIn(jwt) {
-    log('Signing in user...');
+    logInfo('Signing in user...');
     // todo: save in cookie instead of session storage
     sessionStorage.setItem('userLoginJwt', JSON.stringify(jwt))
 }
 
 function isSignedIn() {
     if (getJwt()) {
-        log('User is signed in');
+        logInfo('User is signed in');
         return true;
     }
     return false;
@@ -39,7 +39,7 @@ function isSignedIn() {
 function signOut() {
     // todo: remove cookie
     sessionStorage.removeItem('userLoginJwt');
-    log('Signing out user...');
+    logInfo('Signing out user...');
 }
 
 export { getJwt, parseJwt, isSignedIn, signOut, signIn };

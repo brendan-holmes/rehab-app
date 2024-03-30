@@ -1,16 +1,15 @@
 const debug = true;
 
-const log = (message) => {
-
+const logInfo = (...args) => {
     if (debug) {
-        console.log(message);
+        console.log(...args);
     }
 }
 
-const error = (message) => {
+const logError = (...args) => {
     if (debug) {
-        console.error(message);
+        console.error(...args);
     }
 }
 
-export { log, error };
+export { logInfo, logError };

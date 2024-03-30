@@ -1,20 +1,21 @@
 import Model from './Model';
 import { useEffect, useState } from 'react';
 import { list, remove, put } from '../apiClient';
-import { v4 as uuidv4 } from 'uuid';
-import { log, error } from '../logging';
+import { logInfo, logError } from '../logging';
 
 export default function ModelWithData (props) {
     const [data, setData] = useState([]);
     const [tempAnnotation, setTempAnnotation] = useState({});
     const [labelInEdit, setLabelInEdit] = useState(null);
 
+    const TEMP_ANNOTATION_ID = 'abc';
+
     useEffect(() => {
         if (props.isListRefreshRequired) {
           list()
             .then(response => response.json())
             .then(data => {
-                log('Got data from api.list(): ', data);
+                logInfo('Got data from api.list(): ', data);
                 setData(data.Items || []);
                 props.addToast({"message": `Data refreshed`, "type": "success"});
             })
@@ -44,42 +45,43 @@ export default function ModelWithData (props) {
     // Every annotation is first added as a temporary annotation,
     // and then gets persisted once it has been named
     const addTempAnnotation = (dataPoint) => {
-        log("Setting temp annotation: ", dataPoint);
-        dataPoint.uuid = uuidv4();
+        logInfo('Setting temp annotation: ', dataPoint);
+
+        dataPoint.id = TEMP_ANNOTATION_ID;
         dataPoint.timestamp = new Date().toUTCString();
         setTempAnnotation(dataPoint);
-        setLabelInEdit(dataPoint.uuid);
+        setLabelInEdit(dataPoint.id);
     }
     
     const updateAnnotation = (annotation) => {
-        log('Name Temp Annotation');
+        logInfo('Name Temp Annotation');
         persistAnnotation(annotation);
         setTempAnnotation({});
     }
     
-    const persistAnnotation = (annotationWithUuid) => {
-        if (!annotationWithUuid.uuid) {
-            error('Attempting to persist an annotation that doesn\'t have a uuid.');
+    const persistAnnotation = (annotationWithId) => {
+        if (!annotationWithId.id) {
+            logError('Attempting to persist an annotation that doesn\'t have a id.');
             return;
         }
-        if (!annotationWithUuid.name) {
-            annotationWithUuid.name = "Unnamed injury";
+        if (!annotationWithId.name) {
+            annotationWithId.name = "Unnamed injury";
         }
         let newData;
-        log('Created UUID: ', annotationWithUuid.uuid);
+        logInfo('Created ID: ', annotationWithId.id);
         setData((d) => {
             // In the case of an update, remove the existing version
-            newData = d.filter(a => a.uuid !== annotationWithUuid.uuid);
+            newData = d.filter(a => a.id !== annotationWithId.id);
             // append the new annotation or new version to the data list
-            newData = [...newData, annotationWithUuid];
-            log('Data:', newData);
+            newData = [...newData, annotationWithId];
+            logInfo('Data:', newData);
 
             return newData;
         });
-        put(annotationWithUuid, annotationWithUuid.uuid)
+        put(annotationWithId, annotationWithId.id)
             .then(response => response.json())
             .then((responseJson) => {
-                log('Put data with api.put(). Response: ', responseJson);
+                logInfo('Put data with api.put(). Response: ', responseJson);
                 if (responseJson.errorMessage) {
                     throw new Error(responseJson.errorMessage)
                 }
@@ -92,23 +94,23 @@ export default function ModelWithData (props) {
 
     const deleteAnnotationById = (id) => {
         if (isTempAnnotation(id)) {
-            log('Removing temp annotation');
+            logInfo('Removing temp annotation');
             setTempAnnotation({});
             return;
         }
 
-        log("deleteDataById: ", id);
-        const name = data.filter(a => a.uuid === id)[0].name || 'injury';
-        log("deleteDataById: ", id);
+        logInfo("deleteDataById: ", id);
+        const name = data.filter(a => a.id === id)[0].name || 'injury';
+        logInfo("deleteDataById: ", id);
         if (!window.confirm(`Delete ${name}?`)) {
-            log("Deletion cancelled by user: ", id);
+            logInfo("Deletion cancelled by user: ", id);
             return;
         }
         let newData;
         setData((d) => {
-            newData = d.filter(a => a.uuid !== id);
-            log('Removed annotation: ', id);
-            log('annotations:', newData);
+            newData = d.filter(a => a.id !== id);
+            logInfo('Removed annotation: ', id);
+            logInfo('annotations:', newData);
             return newData;
         });
         remove(id)
@@ -119,7 +121,7 @@ export default function ModelWithData (props) {
     }
 
     const isTempAnnotation = (id) => {
-        return tempAnnotation.uuid && id && id === tempAnnotation.uuid;
+        return tempAnnotation.id && id && id === tempAnnotation.id;
     }
 
     return (
