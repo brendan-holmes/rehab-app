@@ -1,15 +1,22 @@
-import { useEffect, useState } from "react";
+import React from 'react';
+import { useEffect, useState } from 'react';
 import checkIcon from './../resources/icons/check.png';
 import errorIcon from './../resources/icons/exclamation.png';
 import { logInfo } from '../logging';
 
-const Toast = (props) => {
+interface IToastProps {
+    message: string;
+    type: string;
+    title?: string;
+}
+
+const Toast = (props: IToastProps) => {
     const [showToast, setShowToast] = useState(true);
     const handleXButtonClick = () => {
         setShowToast(false);
     }
 
-    logInfo("Toast - ", "message: ", props.message, ", type: ", props.type, ", show: ", showToast);
+    logInfo("Toast - ", "message: ", props.message, ", type: ", props.type, ", show: ", showToast.toString());
 
     useEffect(() => {
         // todo: delete toast from list instead of just hiding

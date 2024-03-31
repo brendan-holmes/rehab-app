@@ -4,20 +4,27 @@ import React, { useState } from 'react';
 import NavBar from './components/NavBar';
 import ToastContainer from './components/ToastContainer';
 import ModelWithData from './components/ModelWithData';
-import ErrorBoundary from './components/ErrorBoundary';
 import { isSignedIn as identityIsSignedSign } from './identity';
 import SignOut from './components/Identity/SignOutButton';
 import SignIn from './components/Identity/SignInButton';
-import SignInModal from './components/Identity/SignInModal';
 import Welcome from './components/Welcome';
 
-function App() {
-  const [isListRefreshRequired, setIsListRefreshRequired] = useState(true);
-  const [toastList, setToastList] = useState([]);
-  const [isSignedIn, setIsSignedIn] = useState(identityIsSignedSign());
-  const [showSignInModal, setShowSignInModal] = useState(false);
+import IToast from './interfaces/IToast';
 
-  const addToast = (toast) => {
+import ErrorBoundary from './components/ErrorBoundary';
+// const ErrorBoundary = require('./components/ErrorBoundary.tsx');
+
+import SignInModal from './components/Identity/SignInModal';
+import Toast from './components/Toast';
+// const SignInModal = require('./components/Identity/SignInModal');
+
+function App() {
+  const [isListRefreshRequired, setIsListRefreshRequired] = useState<boolean>(true);
+  const [toastList, setToastList] = useState<IToast[]>([]);
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(identityIsSignedSign());
+  const [showSignInModal, setShowSignInModal] = useState<boolean>(false);
+
+  const addToast = (toast: IToast) => {
     setToastList([...toastList, toast]);
   }
 

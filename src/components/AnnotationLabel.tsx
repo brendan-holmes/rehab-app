@@ -1,7 +1,19 @@
 import { useState, useEffect } from 'react';
 import { logInfo } from '../logging';
+import React from 'react';
+import IAnnotation from '../interfaces/IAnnotation';
 
-export default function AnnotationLabel(props) {
+interface AnnotationLabelProps {
+    annotation: IAnnotation;
+    handleClick: (id: string) => void;
+    handleDeleteClick: (event: any, id: string) => void;
+    handleRename: (annotation: IAnnotation) => void;
+    isInEdit: boolean;
+    dataPositionString: string;
+    dataNormalString: string;
+}
+
+export default function AnnotationLabel(props: AnnotationLabelProps) {
     const [inputValue, setInputValue] = useState(props.annotation.name || '');
 
     const labelStyle = {
@@ -13,12 +25,12 @@ export default function AnnotationLabel(props) {
         textDecoration: 'none'
     };
 
-    const handleClick = (event) => {
+    const handleClick = (event: any) => {
         event.stopPropagation();
         props.handleClick(props.annotation.id);
     }
 
-    const handleKeyUp = (event) => {
+    const handleKeyUp = (event: any) => {
         if (event && event.key === 'Enter') {
             handleSaveRename(null);
         }
@@ -32,17 +44,17 @@ export default function AnnotationLabel(props) {
         width: '8vh'
     }
 
-    const handleSaveRename = (event) => {
+    const handleSaveRename = (event: any) => {
         logInfo('Saving name');
         props.annotation.name = inputValue;
         props.handleRename(props.annotation);
     }
 
-    const handleInputChange = (event) => {
+    const handleInputChange = (event: any) => {
         setInputValue(event.target.value);
     }
 
-    const capitalizeFirstLetter = (string) => {
+    const capitalizeFirstLetter = (string: string) => {
         if (string && string.length > 0) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
@@ -97,8 +109,8 @@ export default function AnnotationLabel(props) {
             id = {`${props.annotation.id}-label`}
             className = "view-button annotation-label"
             slot = {`hotspot-${props.annotation.id}-label`}
-            data-position = {props.dataPosition}
-            data-normal = {props.dataNormal}
+            data-position = {props.dataPositionString}
+            data-normal = {props.dataNormalString}
             style = {labelStyle}
             onClick={handleClick}
             onKeyUp={handleKeyUp}

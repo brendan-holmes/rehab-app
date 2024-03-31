@@ -1,5 +1,5 @@
 // Get a nicely formatted string from a Date object
-const formatDate = (date) => {
+const formatDate = (date: Date) => {
     if (!date) {
         return "";
     }
