@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { log } from '../logging';
+import { logInfo } from '../logging';
 
 export default function AnnotationLabel(props) {
     const [inputValue, setInputValue] = useState(props.annotation.name || '');
@@ -15,7 +15,7 @@ export default function AnnotationLabel(props) {
 
     const handleClick = (event) => {
         event.stopPropagation();
-        props.handleClick(props.annotation.uuid);
+        props.handleClick(props.annotation.id);
     }
 
     const handleKeyUp = (event) => {
@@ -33,7 +33,7 @@ export default function AnnotationLabel(props) {
     }
 
     const handleSaveRename = (event) => {
-        log('Saving name');
+        logInfo('Saving name');
         props.annotation.name = inputValue;
         props.handleRename(props.annotation);
     }
@@ -46,7 +46,7 @@ export default function AnnotationLabel(props) {
         if (string && string.length > 0) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
-        log('Capitalize First Letter: input string is not valid: ', string);
+        logInfo('Capitalize First Letter: input string is not valid: ', string);
         return string;
       }
 
@@ -59,7 +59,7 @@ export default function AnnotationLabel(props) {
                 placeholder='Injury name'
                 onChange={handleInputChange}
                 value={inputValue}
-                id = {`${props.annotation.uuid}-annotation-label-input`}
+                id = {`${props.annotation.id}-annotation-label-input`}
             />
         </span>;
     const text = props.isInEdit ? labelInput: labelText;
@@ -79,13 +79,13 @@ export default function AnnotationLabel(props) {
             className="annotation-label-cross-button"
             onClick={(e) => {
                 e.stopPropagation();
-                props.handleDeleteClick(e, props.annotation.uuid);
+                props.handleDeleteClick(e, props.annotation.id);
             }}
         >×</span>;
 
     useEffect(() => {
         if (props.isInEdit) {
-            const input = document.getElementById(`${props.annotation.uuid}-annotation-label-input`);
+            const input = document.getElementById(`${props.annotation.id}-annotation-label-input`);
             if (input) {
                 input.focus();
             }
@@ -94,9 +94,9 @@ export default function AnnotationLabel(props) {
 
     return (
         <button
-            id = {`${props.annotation.uuid}-label`}
+            id = {`${props.annotation.id}-label`}
             className = "view-button annotation-label"
-            slot = {`hotspot-${props.annotation.uuid}-label`}
+            slot = {`hotspot-${props.annotation.id}-label`}
             data-position = {props.dataPosition}
             data-normal = {props.dataNormal}
             style = {labelStyle}

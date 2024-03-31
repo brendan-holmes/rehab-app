@@ -1,5 +1,6 @@
-import { log } from './logging';
+import { logInfo } from './logging';
 import { getJwt, parseJwt } from './identity';
+import { v4 as uuid } from 'uuid';
 
 async function dynamoDbOperation(operation, payload = {}) {
     const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
@@ -10,7 +11,7 @@ async function dynamoDbOperation(operation, payload = {}) {
         (operation !== 'delete') &&
         (operation !== 'update')
         ) {
-            log('Invalid dynamo operation.');
+            logInfo('Invalid dynamo operation.');
         return null;
     }
     
@@ -40,6 +41,8 @@ async function dynamoDbOperation(operation, payload = {}) {
 }
 
 function put(data, id) {
+    // return Promise.reject(new Error('Not implemented'));
+
     const jwt = getJwt();
     if (!jwt) {
         return Promise.reject(new Error('Cannot add new item: Unauthorized'));
@@ -57,7 +60,7 @@ function put(data, id) {
         const payload = {
             'Item': {
                 ...data,
-                'id': id,
+                'id': uuid(),
                 'email': email
             },
             
@@ -69,6 +72,8 @@ function put(data, id) {
 }
 
 function list() {
+    // return Promise.reject(new Error('Not implemented'));
+
     const jwt = getJwt();
     if (!jwt) {
         return Promise.reject(new Error('Cannot get list: Unauthorized'));
@@ -78,6 +83,8 @@ function list() {
 }
 
 function remove(id) {
+    // return Promise.reject(new Error('Not implemented'));
+    
     const jwt = getJwt();
     if (!jwt) {
         return Promise.reject(new Error('Cannot remove item: Unauthorized'));
