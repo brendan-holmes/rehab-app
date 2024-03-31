@@ -1,6 +1,10 @@
 import React from "react";
 
-const NavBar = (props) => {
+interface INavbarProps {
+    children: any;
+}
+
+const NavBar = (props: INavbarProps) => {
 
     return (
         <ul className="NavBar">

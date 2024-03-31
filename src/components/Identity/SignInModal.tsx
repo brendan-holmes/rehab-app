@@ -1,7 +1,14 @@
+import React from 'react';
 import SignInWithGoogle from './SignInWithGoogle';
 import Modal from '../Modal';
+// const Modal = require('../Modal');
 
-export default function SignInModal(props) {
+interface ISignInModalProps {
+    handleClose: () => void;
+    handleSignIn: () => void;
+}
+
+export default function SignInModal(props: ISignInModalProps) {
 
     // todo: don't show modal SignInWithGoogle until everything has loaded
 

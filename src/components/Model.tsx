@@ -1,44 +1,60 @@
 import '@google/model-viewer/dist/model-viewer';
-import React, { useState } from 'react';
+import React from 'react';
+
 import { logInfo, logError } from '../logging';
 import Annotation from './Annotation';
+import IAnnotation from '../interfaces/IAnnotation';
 import AnnotationLabel from './AnnotationLabel';
+import IPoint2d from '../interfaces/IPoint2d';
 
-export default function Model(props) {
+const { useState, useRef } = require('react');
+
+interface IModelProps {
+    annotations: IAnnotation[];
+    tempAnnotation: IAnnotation;
+    labelInEdit: string;
+    handleModelClick: (annotation: IAnnotation) => void;
+    handleBackgroundClick: () => void;
+    handleLabelClick: (id: string) => void;
+    handleRename: (annotation: IAnnotation) => void;
+    deleteDataById: (id: string) => void;
+}
+
+export default function Model(props: IModelProps) {
     const modelURL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
-    const modelRef1 = React.useRef();
+    const modelRef1 = useRef();
     const [mouseDownCoords, setMouseDownCords] = useState(null);
 
-    const getLabelDistanceToAnnotation = (numberOfCharacters) => {
+    const getLabelDistanceToAnnotation = (numberOfCharacters: number) => {
         const multiplier = 0.25;
         return (13 + numberOfCharacters) * multiplier;
     }
 
     const mouseDownToClickMaxDist = window.innerHeight * 0.01;
 
-    const handleMouseDown = (event) => {
-        logInfo('Mouse down event: Setting mouse down coords to: ', {x: event.clientX, y: event.clientY});
+    const handleMouseDown = (event: any) => {
+        logInfo('Mouse down event: Setting mouse down coords to: ', {x: event.clientX, y: event.clientY}.toString());
         setMouseDownCords({x: event.clientX, y: event.clientY});
     }
 
-    const calculateDistance = (point1, point2) => {
+    const calculateDistance = (point1: IPoint2d, point2: IPoint2d) => {
         if (!point1.x || !point1.y || !point2.x || !point2.y) {
-            logError('Cannot calculate distance, one or more points are invalid. point1: ', point1, ', point2: ', point2);
+            logError('Cannot calculate distance, one or more points are invalid. point1: ', point1.toString(), ', point2: ', point2.toString());
         }
 
         return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
-
     }
 
-    const handleModelClick = (event) => {
+    // todo: find specific event type
+    const handleModelClick = (event: any) => {
         const { clientX, clientY } = event;
 
         const mouseDownToClickDist = calculateDistance({x: clientX, y: clientY}, {x: mouseDownCoords.x, y: mouseDownCoords.y});
         setMouseDownCords(null);
-        logInfo('distance: ', mouseDownToClickDist);
-        logInfo('max distance: ', mouseDownToClickMaxDist);
+        logInfo('distance: ', mouseDownToClickDist.toString());
+        logInfo('max distance: ', mouseDownToClickMaxDist.toString());
         if ( mouseDownToClickDist > mouseDownToClickMaxDist) {
-            logInfo('clientX: ', clientX, ', clientY: ', ', mouseDownCoords.x: ', mouseDownCoords.x, ' , mouseDownCoords.y: ', mouseDownCoords.y, ' , distance: ', mouseDownToClickDist);
+            logInfo('clientX: ', clientX, ', clientY: ', ', mouseDownCoords.x: ', mouseDownCoords.x.toString(), ' , mouseDownCoords.y: ', mouseDownCoords.y.toString(), ' , distance: ', mouseDownToClickDist.toString());
             logInfo('Click start and end point too far away.')
             return;
         }
@@ -53,7 +69,7 @@ export default function Model(props) {
         }
     };
 
-    const handleDeleteClick = (event, id) => {
+    const handleDeleteClick = (event: any, id: string) => {
         if (event) {
             event.stopPropagation();
 
@@ -64,28 +80,28 @@ export default function Model(props) {
         }
     }
 
-    const getDataPosition = (annotation) => {
+    const getDataPositionString = (annotation: IAnnotation) => {
         if (!annotation || !annotation.position) {
             logInfo('Annotation position is not defined in getDataPosition');
-            return null;
+            return '';
         }
             
         return `${annotation.position.x} ${annotation.position.y} ${annotation.position.z}`;
     };
 
-    const getDataPositionWithOffset = (annotation, offset = {x: 0, y: 0, z: 0}) => {
+    const getDataPositionStringWithOffset = (annotation: IAnnotation, offset = {x: 0, y: 0, z: 0}): string => {
         if (!annotation || !annotation.position) {
             logInfo('Annotation position is not defined in getDataPositionWithOffset');
-            return null;
+            return '';
         }
 
         return `${annotation.position.x + offset.x} ${annotation.position.y + offset.y} ${annotation.position.z + offset.z}`;
       };
     
-    const getDataNormal = (annotation) => {
-        if (!annotation || !annotation.position) {
-            logInfo('Annotation position is not defined in getDataNormal');
-            return null;
+    const getDataNormalString = (annotation: IAnnotation): string => {
+        if (!annotation || !annotation.normal) {
+            logInfo('Annotation normal is not defined. Returning empty string in getDataNormalString');
+            return '';
         }
 
         return `${annotation.normal.x} ${annotation.normal.y} ${annotation.normal.z}`;
@@ -100,15 +116,15 @@ export default function Model(props) {
         backgroundPosition: '-19px -19px'
     };
 
-    const annotations = props.data ? 
-        props.data.map((annotation, idx) => {
+    const annotations = props.annotations ? 
+        props.annotations.map((annotation, idx) => {
             if (annotation && annotation.id) {
                 return (
                     <Annotation 
                         key = {`${annotation.id}-annotation`}
                         annotation = {annotation}
-                        dataPosition = {getDataPosition(annotation)}
-                        dataNormal = {getDataNormal(annotation)}
+                        dataPosition = {getDataPositionString(annotation)}
+                        dataNormal = {getDataNormalString(annotation)}
                         handleAnnotationClick = {handleDeleteClick}
                     />
                 )
@@ -118,15 +134,15 @@ export default function Model(props) {
         })
         : null;
 
-    const annotationLabels = props.data ? 
-        props.data.map((annotation, idx) => {
+    const annotationLabels = props.annotations ? 
+        props.annotations.map((annotation, idx) => {
             if (annotation && annotation.id) {
                 return (
                     <AnnotationLabel 
                         key = {`${annotation.id}-annotation-label`}
                         annotation = {annotation}
-                        dataPosition = {getDataPositionWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation?.name?.length || 0), y: 1, z: 0})}
-                        dataNormal = {getDataNormal(annotation)}
+                        dataPositionString = {getDataPositionStringWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation?.name?.length || 0), y: 1, z: 0})}
+                        dataNormalString = {getDataNormalString(annotation)}
                         handleDeleteClick = {handleDeleteClick}
                         handleRename = {props.handleRename}
                         handleClick = {props.handleLabelClick}
@@ -143,8 +159,8 @@ export default function Model(props) {
         <Annotation 
             key = {`${props.tempAnnotation.id}-annotation`}
             annotation = {props.tempAnnotation}
-            dataPosition = {getDataPosition(props.tempAnnotation)}
-            dataNormal = {getDataNormal(props.tempAnnotation)}
+            dataPosition = {getDataPositionString(props.tempAnnotation)}
+            dataNormal = {getDataNormalString(props.tempAnnotation)}
             handleAnnotationClick = {handleDeleteClick}
         /> :
         null;
@@ -153,8 +169,8 @@ export default function Model(props) {
         <AnnotationLabel 
             key = {`${props.tempAnnotation.id}-annotation-label`}
             annotation = {props.tempAnnotation}
-            dataPosition = {getDataPositionWithOffset(props.tempAnnotation, {x:getLabelDistanceToAnnotation(props?.tempAnnotation?.name?.length || 0), y: 1, z: 0})}
-            dataNormal = {getDataNormal(props.tempAnnotation)}
+            dataPositionString = {getDataPositionStringWithOffset(props.tempAnnotation, {x:getLabelDistanceToAnnotation(props?.tempAnnotation?.name?.length || 0), y: 1, z: 0})}
+            dataNormalString = {getDataNormalString(props.tempAnnotation)}
             handleDeleteClick = {handleDeleteClick}
             handleRename = {props.handleRename}
             handleClick = {props.handleLabelClick}
@@ -173,7 +189,7 @@ export default function Model(props) {
                 onClick={handleModelClick}
                 onMouseDown={handleMouseDown}
                 // onMouseUp={handleMouseUp}
-                ref={(ref) => {
+                ref={(ref: any) => {
                     modelRef1.current = ref;
                 }}
                 style={style}

@@ -1,18 +1,27 @@
 import React from 'react';
 import { logInfo } from '../logging';
 
-class ErrorBoundary extends React.Component {
-    constructor(props) {
+type ErrorBoundaryProps = {
+    errorMessage: string;
+    children: React.ReactNode;
+}
+
+type ErrorBoundaryState = {
+    hasError: boolean;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
       super(props);
       this.state = { hasError: false };
     }
   
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError(error: any) {
       // Update state so the next render will show the fallback UI.
       return { hasError: true };
     }
   
-    componentDidCatch(error, errorInfo) {
+    componentDidCatch(error: any, errorInfo: any) {
       // You can also log the error to an error reporting service
       logInfo(error, errorInfo);
     }
@@ -28,9 +37,5 @@ class ErrorBoundary extends React.Component {
 
     
   }
-
-ErrorBoundary.defaultProps = {
-    errorMessage: "Something went wrong."
-}
 
 export default ErrorBoundary;

@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+      "module": "esnext",
+      "noImplicitAny": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+    //   "outFile": "../../built/local/tsc.js",
+      "sourceMap": true,
+      "jsx": "react",
+      "moduleResolution": "node",
+      "lib": [
+        "es6",
+        "dom"
+      ],
+      "target": "es5",
+      "allowJs": true,
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "strict": true,
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "noEmit": true
+    },
+    "include": [
+      "src/**/*"
+    ],
+    "exclude": [
+      "**/*.spec.ts"
+    ]
+  }
+  

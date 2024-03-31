@@ -1,8 +1,9 @@
 import { logInfo } from './logging';
 import { getJwt, parseJwt } from './identity';
 import { v4 as uuid } from 'uuid';
+import IAnnotation from './interfaces/IAnnotation';
 
-async function dynamoDbOperation(operation, payload = {}) {
+async function dynamoDbOperation(operation: string, payload: any = {}) {
     const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
     
     if (
@@ -30,7 +31,8 @@ async function dynamoDbOperation(operation, payload = {}) {
         'jwt': jwt
     });
 
-    var requestOptions = {
+    // todo: use a more specific type for requestOptions
+    var requestOptions: any = {
         method: 'POST',
         headers: headers,
         body: body,
@@ -40,14 +42,16 @@ async function dynamoDbOperation(operation, payload = {}) {
     return await fetch(url, requestOptions);
 }
 
-function put(data, id) {
+function put(data: IAnnotation[], id: string) {
     // return Promise.reject(new Error('Not implemented'));
 
     const jwt = getJwt();
     if (!jwt) {
         return Promise.reject(new Error('Cannot add new item: Unauthorized'));
     }
-    const jwtDecoded = parseJwt(jwt);
+
+    // todo: use a more specific type for jwtDecoded
+    const jwtDecoded: any = parseJwt(jwt);
     if (!jwtDecoded) {
         return Promise.reject(new Error('Cannot add new item: Unauthorized'));
     }
@@ -82,7 +86,7 @@ function list() {
     return dynamoDbOperation('list');
 }
 
-function remove(id) {
+function remove(id: string) {
     // return Promise.reject(new Error('Not implemented'));
     
     const jwt = getJwt();

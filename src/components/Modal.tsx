@@ -1,4 +1,11 @@
-export default function Modal(props) {
+import React from 'react';
+
+interface IModalProps {
+    handleClose: () => void;
+    children: React.ReactNode;
+}
+
+export default function Modal(props: IModalProps) {
 
     return (
         <div 

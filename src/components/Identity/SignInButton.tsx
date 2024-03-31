@@ -1,4 +1,10 @@
-export default function SignOut(props) {
+import React from 'react';
+
+interface ISignOutProps {
+    handleClick: () => void;
+}
+
+export default function SignOut(props: ISignOutProps) {
     const handleSignIn = () => {
         props.handleClick();
     }

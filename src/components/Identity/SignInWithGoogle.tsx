@@ -1,15 +1,25 @@
+import React from 'react';
 import { useState } from 'react';
 import useScript from '../../hooks/useScript';
 import { signIn } from '../../identity';
-import Loading from '../Loading';
 
-export default function SignInWithGoogle(props) {
+const Loading = require('../Loading');
+
+interface ISignInWithGoogleProps {
+    handleSignIn: () => void;
+}
+
+declare global {
+    interface Window { google: any; }
+}
+
+export default function SignInWithGoogle(props: ISignInWithGoogleProps) {
     const [isLoaded, setIsLoaded] = useState(false);
 
     const googleSignInScriptUrl = 'https://accounts.google.com/gsi/client';
     const client_id = '85267952322-go49gqteqi6fc24ndqj6c8k7a6meop2f.apps.googleusercontent.com';
 
-    const handleCredentialResponse = (response) => {
+    const handleCredentialResponse = (response: any) => {
         console.log("Encoded JWT ID token: " + response.credential);
     
         signIn(response.credential);
@@ -17,6 +27,7 @@ export default function SignInWithGoogle(props) {
     }
 
     useScript(googleSignInScriptUrl, () => {
+        
         // the window property lets you call any functions that have been loaded in the DOM
         window.google.accounts.id.initialize({
             client_id: client_id,

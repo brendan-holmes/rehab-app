@@ -1,6 +1,12 @@
+import React from 'react';
 import Toast from "./Toast";
+import IToast from "../interfaces/IToast";
 
-const ToastContainer = (props) => {
+interface IToastContainerProps {
+    toastList: IToast[];
+}
+
+const ToastContainer = (props: IToastContainerProps) => {
     if (Array.isArray(props.toastList)) {
         return (
             <div className="toast-container">
