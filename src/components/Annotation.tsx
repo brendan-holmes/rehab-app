@@ -5,7 +5,7 @@ interface IAnnotationProps {
     annotation: IAnnotation;
     dataPosition: string;
     dataNormal: string;
-    handleAnnotationClick: (e: any, id: string) => void;
+    handleAnnotationClick: (e: React.MouseEvent, id: string) => void;
 }
 
 export default function Annotation(props: IAnnotationProps) {

@@ -1,7 +1,7 @@
 import React from "react";
 
 interface INavbarProps {
-    children: any;
+    children: React.ReactNode;
 }
 
 const NavBar = (props: INavbarProps) => {

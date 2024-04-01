@@ -6,7 +6,7 @@ import IAnnotation from '../interfaces/IAnnotation';
 interface AnnotationLabelProps {
     annotation: IAnnotation;
     handleClick: (id: string) => void;
-    handleDeleteClick: (event: any, id: string) => void;
+    handleDeleteClick: (event: React.MouseEvent, id: string) => void;
     handleRename: (annotation: IAnnotation) => void;
     isInEdit: boolean;
     dataPositionString: string;
@@ -25,14 +25,14 @@ export default function AnnotationLabel(props: AnnotationLabelProps) {
         textDecoration: 'none'
     };
 
-    const handleClick = (event: any) => {
+    const handleClick = (event: React.MouseEvent) => {
         event.stopPropagation();
         props.handleClick(props.annotation.id);
     }
 
-    const handleKeyUp = (event: any) => {
+    const handleKeyUp = (event: React.KeyboardEvent) => {
         if (event && event.key === 'Enter') {
-            handleSaveRename(null);
+            handleSaveRename();
         }
     }
 
@@ -44,13 +44,13 @@ export default function AnnotationLabel(props: AnnotationLabelProps) {
         width: '8vh'
     }
 
-    const handleSaveRename = (event: any) => {
+    const handleSaveRename = () => {
         logInfo('Saving name');
         props.annotation.name = inputValue;
         props.handleRename(props.annotation);
     }
 
-    const handleInputChange = (event: any) => {
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
     }
 
@@ -81,7 +81,7 @@ export default function AnnotationLabel(props: AnnotationLabelProps) {
             className="annotation-label-save-button" 
             onClick={(e) => {
                 e.stopPropagation();
-                handleSaveRename(e);
+                handleSaveRename();
             }}
         >Save</span>
         : null;

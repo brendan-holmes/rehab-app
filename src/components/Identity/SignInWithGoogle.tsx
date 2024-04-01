@@ -9,7 +9,7 @@ interface ISignInWithGoogleProps {
 }
 
 declare global {
-    interface Window { google: any; }
+    interface Window { google: { accounts: { id: { initialize: any, renderButton: any }}}}
 }
 
 export default function SignInWithGoogle(props: ISignInWithGoogleProps) {

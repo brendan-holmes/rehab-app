@@ -1,12 +1,12 @@
 const debug = true;
 
-const logInfo = (...args: any[]) => {
+const logInfo = (...args: string[]) => {
     if (debug) {
         console.log(...args);
     }
 }
 
-const logError = (...args: any[]) => {
+const logError = (...args: string[]) => {
     if (debug) {
         console.error(...args);
     }

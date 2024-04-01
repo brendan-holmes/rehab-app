@@ -2,8 +2,23 @@ import { logInfo } from './logging';
 import { getJwt, parseJwt } from './identity';
 import { v4 as uuid } from 'uuid';
 import IAnnotation from './interfaces/IAnnotation';
+import IJwt from './interfaces/IJwt';
 
-async function dynamoDbOperation(operation: string, payload: any = {}) {
+interface IDynamoDBPayload {
+    Item?: IDynamoDBItem;
+    Key?: IDynamoDBKey;
+}
+
+interface IDynamoDBItem {
+    id: string;
+    email: string;
+}
+
+interface IDynamoDBKey {
+    id: string;
+}
+
+async function dynamoDbOperation(operation: string, payload: IDynamoDBPayload = {}): Promise<Response | null> {
     const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
     
     if (
@@ -32,7 +47,7 @@ async function dynamoDbOperation(operation: string, payload: any = {}) {
     });
 
     // todo: use a more specific type for requestOptions
-    var requestOptions: any = {
+    var requestOptions: RequestInit = {
         method: 'POST',
         headers: headers,
         body: body,
@@ -42,7 +57,7 @@ async function dynamoDbOperation(operation: string, payload: any = {}) {
     return await fetch(url, requestOptions);
 }
 
-function put(data: IAnnotation[], id: string) {
+function put(data: IAnnotation, id: string): Promise<Response | null> {
     // return Promise.reject(new Error('Not implemented'));
 
     const jwt = getJwt();
@@ -51,7 +66,7 @@ function put(data: IAnnotation[], id: string) {
     }
 
     // todo: use a more specific type for jwtDecoded
-    const jwtDecoded: any = parseJwt(jwt);
+    const jwtDecoded: IJwt = parseJwt(jwt);
     if (!jwtDecoded) {
         return Promise.reject(new Error('Cannot add new item: Unauthorized'));
     }
@@ -86,7 +101,7 @@ function list() {
     return dynamoDbOperation('list');
 }
 
-function remove(id: string) {
+function remove(id: string): Promise<Response | null> {
     // return Promise.reject(new Error('Not implemented'));
     
     const jwt = getJwt();
