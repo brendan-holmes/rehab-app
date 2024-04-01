@@ -6,17 +6,12 @@ import '@google/model-viewer/dist/model-viewer';
 import { logInfo, logError } from '../logging';
 import AnnotationLabel from './AnnotationLabel';
 import IPoint2d from '../interfaces/IPoint2d';
+import { toast } from 'react-toastify';
 
 const { useEffect, useState, useRef } = require('react');
 const { list, remove, put } = require('../apiClient');
 
-interface IModelProps {
-    isListRefreshRequired: boolean; // todo: refactor
-    setIsListRefreshRequired: (isListRefreshRequired: boolean) => void; // todo: refactor
-    addToast: (toast: any) => void; // todo: refactor
-}
-
-export default function Model (props: IModelProps) {
+export default function Model () {
     const [annotationsData, setAnnotationsData] = useState([]);
     const [tempAnnotationData, setTempAnnotationData] = useState(null);
     const [labelInEdit, setLabelInEdit] = useState('');
@@ -32,24 +27,26 @@ export default function Model (props: IModelProps) {
         return (13 + numberOfCharacters) * multiplier;
     }
 
+    // Used to determine if a click is a drag or a click
     const handleMouseDown = (event: any) => {
         logInfo(`Mouse down event: Setting mouse down coords to: ${{x: event.clientX, y: event.clientY}}`);
         setMouseDownCords({x: event.clientX, y: event.clientY});
     }
 
-    useEffect(() => {
-        if (props.isListRefreshRequired) {
-          list()
+    const refreshData = () => {
+        list()
             .then((response: Response) => response.json())
             .then((modelData: IModelData) => {
                 logInfo(`Got data from api.list(): ${modelData}`, );
                 setAnnotationsData(modelData.Items);
-                props.addToast({"message": `Data refreshed`, "type": "success"});
+                toast("Data refreshed");
             })
-            .catch((error: Error) => props.addToast({"message": `Unable to refresh data: ${error.message}`, "type": "error"}));
-          props.setIsListRefreshRequired(false);
-        }
-      });
+            .catch((error: Error) => toast(`Unable to refresh data: ${error}`));
+        };
+
+    useEffect(() => {
+        refreshData();
+    }, []);
 
     const handleBackgroundClick = () => {
         setTempAnnotationData(null);
@@ -64,17 +61,10 @@ export default function Model (props: IModelProps) {
     // and then gets persisted once it has been named
     const addTempAnnotation = (dataPoint: IAnnotation) => {
         logInfo(`Setting temp annotation: ${dataPoint}`);
-
         dataPoint.id = TEMP_ANNOTATION_ID;
         dataPoint.timestamp = new Date().toUTCString();
         setTempAnnotationData(dataPoint);
         setLabelInEdit(dataPoint.id);
-    }
-    
-    const updateAnnotation = (annotation: IAnnotation) => {
-        logInfo('Name Temp Annotation');
-        persistAnnotation(annotation);
-        setTempAnnotationData(null);
     }
     
     const persistAnnotation = (annotationWithId: IAnnotation) => {
@@ -97,40 +87,48 @@ export default function Model (props: IModelProps) {
                 if (responseJson.errorMessage) {
                     throw new Error(responseJson.errorMessage)
                 }
-                props.addToast({"message": `Added injury`, "type": "success"})
+                toast("Added injury");
             })
-            .catch((error: Error) => props.addToast({"title": "Error", "message": `An error occurred: ${error.message}`, "type": "error"}));
+            .catch((error: Error) => toast(`An error occurred: ${error}`));
         setLabelInEdit('');
-        props.setIsListRefreshRequired(true);
+        refreshData();
+        setTempAnnotationData(null);
         return newData;
     };
 
-    const deleteAnnotationById = (id: string) => {
-        if (isTempAnnotation(id)) {
-            logInfo('Removing temp annotation');
-            setTempAnnotationData(null);
-            return;
-        }
+    const deleteAnnotation = (event: any, id: string) => {
+        if (event) {
+            event.stopPropagation();
 
-        logInfo("deleteDataById: ", id);
-        const name = annotationsData.filter((a: IAnnotation) => a.id === id)[0].name || 'injury';
-        if (!window.confirm(`Delete ${name}?`)) {
-            logInfo("Deletion cancelled by user: ", id);
-            return;
+            logInfo("Delete clicked. id: ", id);
+            if (id) {
+                if (isTempAnnotation(id)) {
+                    logInfo('Removing temp annotation');
+                    setTempAnnotationData(null);
+                    return;
+                }
+        
+                logInfo("deleteDataById: ", id);
+                const name = annotationsData.filter((a: IAnnotation) => a.id === id)[0].name || 'injury';
+                if (!window.confirm(`Delete ${name}?`)) {
+                    logInfo("Deletion cancelled by user: ", id);
+                    return;
+                }
+                let newData;
+                setAnnotationsData((existingAnnotations: IAnnotation[]) => {
+                    logInfo(existingAnnotations);
+                    newData = existingAnnotations.filter(annotation => annotation.id !== id);
+                    logInfo('Removed annotation: ', id);
+                    logInfo('annotations:', newData);
+                    return newData;
+                });
+                remove(id)
+                    .then((response: Response) => response.json())
+                    .then(() => toast("Deleted injury"))
+                    .catch((error: Error) => toast(`An error occurred: ${error}`));
+                return newData;
+            }
         }
-        let newData;
-        setAnnotationsData((existingAnnotations: IAnnotation[]) => {
-            logInfo(existingAnnotations);
-            newData = existingAnnotations.filter(annotation => annotation.id !== id);
-            logInfo('Removed annotation: ', id);
-            logInfo('annotations:', newData);
-            return newData;
-        });
-        remove(id)
-            .then((response: Response) => response.json())
-            .then(() => props.addToast({"message": `Deleted injury`, "type": "success"}))
-            .catch((error: Error) => props.addToast({"message": `An error occurred: ${error.message}`, "type": "error"}));
-        return newData;
     }
 
     const isTempAnnotation = (id: string) => {
@@ -166,16 +164,6 @@ export default function Model (props: IModelProps) {
         }
     };
 
-    const handleDeleteClick = (event: any, id: string) => {
-        if (event) {
-            event.stopPropagation();
-
-            logInfo("Delete clicked. id: ", id);
-            if (id) {
-                deleteAnnotationById(id);
-            }
-        }
-    }
 
     const getDataPositionString = (annotation: IAnnotation) => {
         if (!annotation || !annotation.position) {
@@ -213,7 +201,7 @@ export default function Model (props: IModelProps) {
         backgroundPosition: '-19px -19px'
     };
 
-    const annotationsComponent = annotationsData ? 
+    const annotations = annotationsData ? 
         annotationsData.map((annotation: IAnnotation, _: any) => {
             if (annotation && annotation.id) {
                 return (
@@ -222,7 +210,7 @@ export default function Model (props: IModelProps) {
                         annotation = {annotation}
                         dataPosition = {getDataPositionString(annotation)}
                         dataNormal = {getDataNormalString(annotation)}
-                        handleAnnotationClick = {handleDeleteClick}
+                        handleAnnotationClick = {deleteAnnotation}
                     />
                 )
             } else {
@@ -240,8 +228,8 @@ export default function Model (props: IModelProps) {
                         annotation = {annotation}
                         dataPositionString = {getDataPositionStringWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation?.name?.length || 0), y: 1, z: 0})}
                         dataNormalString = {getDataNormalString(annotation)}
-                        handleDeleteClick = {handleDeleteClick}
-                        handleRename = {updateAnnotation}
+                        handleDeleteClick = {deleteAnnotation}
+                        handleRename = {persistAnnotation}
                         handleClick = {handleLabelClick}
                         isInEdit = {labelInEdit === annotation.id}
                     />
@@ -252,13 +240,13 @@ export default function Model (props: IModelProps) {
         })
         : null;
     
-    const tempAnnotationComponent = tempAnnotationData && tempAnnotationData.id ? 
+    const tempAnnotation = tempAnnotationData && tempAnnotationData.id ? 
         <Annotation 
             key = {`${tempAnnotationData.id}-annotation`}
             annotation = {tempAnnotationData}
             dataPosition = {getDataPositionString(tempAnnotationData)}
             dataNormal = {getDataNormalString(tempAnnotationData)}
-            handleAnnotationClick = {handleDeleteClick}
+            handleAnnotationClick = {deleteAnnotation}
         /> :
         null;
     
@@ -268,8 +256,8 @@ export default function Model (props: IModelProps) {
             annotation = {tempAnnotationData}
             dataPositionString = {getDataPositionStringWithOffset(tempAnnotationData, {x:getLabelDistanceToAnnotation(tempAnnotationData?.name?.length || 0), y: 1, z: 0})}
             dataNormalString = {getDataNormalString(tempAnnotationData)}
-            handleDeleteClick = {handleDeleteClick}
-            handleRename = {updateAnnotation}
+            handleDeleteClick = {deleteAnnotation}
+            handleRename = {persistAnnotation}
             handleClick = {handleLabelClick}
             isInEdit = {labelInEdit === tempAnnotationData.id}
         /> :
@@ -292,7 +280,6 @@ export default function Model (props: IModelProps) {
                 shadow-intensity="1"
                 onClick={handleModelClick}
                 onMouseDown={handleMouseDown}
-                // onMouseUp={handleMouseUp}
                 ref={(ref: any) => {
                     modelRef1.current = ref;
                 }}
@@ -303,9 +290,9 @@ export default function Model (props: IModelProps) {
                 <div className="progress-bar hide" slot="progress-bar">
                     <div className="update-bar"></div>
                 </div>
-                {annotationsComponent}
+                {annotations}
                 {annotationLabels}
-                {tempAnnotationComponent}
+                {tempAnnotation}
                 {tempAnnotationLabel}
             </model-viewer>
         </div>
