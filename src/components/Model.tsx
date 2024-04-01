@@ -143,11 +143,11 @@ export default function Model (props: IModelProps) {
 
         const mouseDownToClickDist = calculateDistance({x: clientX, y: clientY}, {x: mouseDownCoords.x, y: mouseDownCoords.y});
         setMouseDownCords(null);
-        logInfo('distance: ', mouseDownToClickDist.toString());
-        logInfo('max distance: ', mouseDownToClickMaxDist.toString());
+        logInfo(`distance: ${mouseDownToClickDist}`);
+        logInfo(`max distance: ${mouseDownToClickMaxDist}`);
         if ( mouseDownToClickDist > mouseDownToClickMaxDist) {
-            logInfo('clientX: ', clientX, ', clientY: ', ', mouseDownCoords.x: ', mouseDownCoords.x.toString(), ' , mouseDownCoords.y: ', mouseDownCoords.y.toString(), ' , distance: ', mouseDownToClickDist.toString());
-            logInfo('Click start and end point too far away.')
+            logInfo(`clientX: ${clientX}, clientY: ${clientY}, mouseDownCoords.x: ${mouseDownCoords.x}, mouseDownCoords.y: ${mouseDownCoords.y} distance: ${mouseDownToClickDist}`); 
+            logInfo('Click start and end point too far away.');
             return;
         }
 
@@ -277,7 +277,7 @@ export default function Model (props: IModelProps) {
 
     const calculateDistance = (point1: IPoint2d, point2: IPoint2d) => {
         if (!point1.x || !point1.y || !point2.x || !point2.y) {
-            logError('Cannot calculate distance, one or more points are invalid. point1: ', point1.toString(), ', point2: ', point2.toString());
+            logError(`Cannot calculate distance, one or more points are invalid. point1: ${point1}, point2: ${point2}`);
         }
 
         return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));

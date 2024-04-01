@@ -16,7 +16,7 @@ const Toast = (props: IToastProps) => {
         setShowToast(false);
     }
 
-    logInfo("Toast - ", "message: ", props.message, ", type: ", props.type, ", show: ", showToast.toString());
+    logInfo(`Toast - message: ${props.message}, type: ${props.type}, show: ${showToast}`);
 
     useEffect(() => {
         // todo: delete toast from list instead of just hiding
