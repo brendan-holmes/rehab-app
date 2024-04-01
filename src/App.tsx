@@ -1,22 +1,15 @@
 import './App.css';
 import React, { useState } from 'react';
-// import Info from './components/Info.js';
 import NavBar from './components/NavBar';
 import ToastContainer from './components/ToastContainer';
-import ModelWithData from './components/ModelWithData';
+import Model from './components/Model';
 import { isSignedIn as identityIsSignedSign } from './identity';
 import SignOut from './components/Identity/SignOutButton';
 import SignIn from './components/Identity/SignInButton';
 import Welcome from './components/Welcome';
-
 import IToast from './interfaces/IToast';
-
 import ErrorBoundary from './components/ErrorBoundary';
-// const ErrorBoundary = require('./components/ErrorBoundary.tsx');
-
 import SignInModal from './components/Identity/SignInModal';
-import Toast from './components/Toast';
-// const SignInModal = require('./components/Identity/SignInModal');
 
 function App() {
   const [isListRefreshRequired, setIsListRefreshRequired] = useState<boolean>(true);
@@ -51,7 +44,7 @@ function App() {
   // manually or link it to a prop
   const model = isSignedIn ? 
     <ErrorBoundary errorMessage={"Unable to load model"}>
-      <ModelWithData 
+      <Model 
         isListRefreshRequired={isListRefreshRequired}
         // todo: passing set State function to another component is an anti-pattern
         setIsListRefreshRequired={setIsListRefreshRequired}

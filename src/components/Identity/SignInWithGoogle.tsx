@@ -2,8 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import useScript from '../../hooks/useScript';
 import { signIn } from '../../identity';
-
-const Loading = require('../Loading');
+import Loading from '../Loading';
 
 interface ISignInWithGoogleProps {
     handleSignIn: () => void;
