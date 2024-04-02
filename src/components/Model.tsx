@@ -1,16 +1,15 @@
 import React from 'react';
-import Annotation from './Annotation';
-import IAnnotation from '../interfaces/IAnnotation';
-import IModelData from '../interfaces/IModelData';
+import { Annotation } from './Annotation';
+import { IAnnotation } from '../interfaces/IAnnotation';
 import '@google/model-viewer/dist/model-viewer';
 import { logInfo, logError } from '../logging';
-import AnnotationLabel from './AnnotationLabel';
-import IPoint2d from '../interfaces/IPoint2d';
+import { AnnotationLabel } from './AnnotationLabel';
+import { IPoint2d } from '../interfaces/IPoint2d';
 import { toast } from 'react-toastify';
 import { list, remove, put } from '../apiClient';
 import { useEffect, useState, useRef } from 'react';
 
-export default function Model () {
+export function Model () {
     const [annotationsData, setAnnotationsData] = useState<IAnnotation[]>([]);
     const [tempAnnotationData, setTempAnnotationData] = useState<IAnnotation | null>(null);
 
@@ -18,56 +17,55 @@ export default function Model () {
     const modelRef1 = useRef<JSX.IntrinsicElements["model-viewer"]>();
     const [mouseDownCoords, setMouseDownCoords] = useState<IPoint2d | null>(null);
 
-    const modelURL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
-    const TEMP_ANNOTATION_ID = 'abc'; // todo: refactor
+    const MODEL_FILE_URL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
+    
     const mouseDownToClickMaxDist = window.innerHeight * 0.01;
-
-    const getLabelDistanceToAnnotation = (numberOfCharacters: number) => {
-        const multiplier = 0.25;
-        return (13 + numberOfCharacters) * multiplier;
-    }
-
-    // Used to determine if a click is a drag or a click
-    const handleMouseDown = (event: React.MouseEvent) => {
-        logInfo(`Mouse down event: Setting mouse down coords to: ${{x: event.clientX, y: event.clientY}}`);
-        setMouseDownCoords({x: event.clientX, y: event.clientY});
-    }
-
-    const refreshData = () => {
-        list()
-            .then((response: Response | null) => response?.json())
-            .then((modelData: IModelData) => {
-                logInfo(`Got data from api.list(): ${modelData}`, );
-                setAnnotationsData(modelData.Items);
-                toast("Data refreshed");
-            })
-            .catch((error: Error) => toast(`Unable to refresh data: ${error}`));
-        };
 
     useEffect(() => {
         refreshData();
     }, []);
 
-    const handleBackgroundClick = () => {
+    function getLabelDistanceToAnnotation(numberOfCharacters: number) {
+        const multiplier = 0.25;
+        return (13 + numberOfCharacters) * multiplier;
+    }
+
+    // Used to determine if a click is a drag or a click
+    function handleMouseDown (event: React.MouseEvent) {
+        logInfo(`Mouse down event: Setting mouse down coords to: ${{x: event.clientX, y: event.clientY}}`);
+        setMouseDownCoords({x: event.clientX, y: event.clientY});
+    }
+
+    function refreshData() {
+        list()
+            .then((annotations: IAnnotation[]) => {
+                logInfo(`Got data from api.list(): ${annotations}`, );
+                setAnnotationsData(annotations);
+                toast("Data refreshed");
+            })
+            .catch((error: Error) => toast(`Unable to refresh data: ${error}`));
+        };
+
+    function handleBackgroundClick() {
         setTempAnnotationData(null);
         setLabelInEdit('');
     }
 
-    const handleLabelClick = (id: string) => {
+    function handleLabelClick(id: string) {
         setLabelInEdit(id);
     }
 
     // Every annotation is first added as a temporary annotation,
     // and then gets persisted once it has been named
-    const addTempAnnotation = (dataPoint: IAnnotation) => {
+    function addTempAnnotation(dataPoint: IAnnotation) {
         logInfo(`Setting temp annotation: ${dataPoint}`);
-        dataPoint.id = TEMP_ANNOTATION_ID;
+        dataPoint.id = 'temporary-id'; // todo: redesign
         dataPoint.timestamp = new Date().toUTCString();
         setTempAnnotationData(dataPoint);
         setLabelInEdit(dataPoint.id);
     }
     
-    const persistAnnotation = (annotationWithId: IAnnotation) => {
+    function persistAnnotation(annotationWithId: IAnnotation) {
         if (!annotationWithId.id) {
             logError('Attempting to persist an annotation that doesn\'t have a id.');
             return;
@@ -79,7 +77,7 @@ export default function Model () {
         logInfo('Created ID: ', annotationWithId.id);
 
         put(annotationWithId, annotationWithId.id)
-            .then((response: Response | null) => response?.json())
+            .then((response: Response) => response?.json())
 
             // todo
             .then((responseJson: any) => {
@@ -96,7 +94,7 @@ export default function Model () {
         return newData;
     };
 
-    const deleteAnnotation = (event: React.MouseEvent, id: string) => {
+    function deleteAnnotation (event: React.MouseEvent, id: string) {
         if (event) {
             event.stopPropagation();
 
@@ -131,11 +129,11 @@ export default function Model () {
         }
     }
 
-    const isTempAnnotation = (id: string) => {
+    function isTempAnnotation(id: string) {
         return tempAnnotationData && tempAnnotationData.id && id && (id === tempAnnotationData.id);
     }
 
-    const handleModelClick = (event: React.MouseEvent) => {
+    function handleModelClick(event: React.MouseEvent) {
         const { clientX, clientY } = event;
 
         if (mouseDownCoords === null) {
@@ -168,7 +166,7 @@ export default function Model () {
     };
 
 
-    const getDataPositionString = (annotation: IAnnotation) => {
+    function getDataPositionString (annotation: IAnnotation) {
         if (!annotation || !annotation.position) {
             logInfo('Annotation position is not defined in getDataPosition');
             return '';
@@ -177,7 +175,7 @@ export default function Model () {
         return `${annotation.position.x} ${annotation.position.y} ${annotation.position.z}`;
     };
 
-    const getDataPositionStringWithOffset = (annotation: IAnnotation, offset = {x: 0, y: 0, z: 0}): string => {
+    function getDataPositionStringWithOffset(annotation: IAnnotation, offset = {x: 0, y: 0, z: 0}): string {
         if (!annotation || !annotation.position) {
             logError('Annotation position is not defined in getDataPositionWithOffset');
             return '';
@@ -192,7 +190,7 @@ export default function Model () {
           }`;
       };
     
-    const getDataNormalString = (annotation: IAnnotation): string => {
+    function getDataNormalString (annotation: IAnnotation): string {
         if (!annotation || !annotation.normal) {
             logInfo('Annotation normal is not defined. Returning empty string in getDataNormalString');
             return '';
@@ -200,6 +198,15 @@ export default function Model () {
 
         return `${annotation.normal.x} ${annotation.normal.y} ${annotation.normal.z}`;
     };
+
+    function calculateDistance (point1: IPoint2d, point2: IPoint2d): number | null {
+        if (!point1.x || !point1.y || !point2.x || !point2.y) {
+            logError(`Cannot calculate distance, one or more points are invalid. point1: ${point1}, point2: ${point2}`);
+            return null;
+        }
+
+        return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+    }
 
     const style = {
         height: '94vh',
@@ -272,19 +279,10 @@ export default function Model () {
         /> :
         null;
 
-    const calculateDistance = (point1: IPoint2d, point2: IPoint2d): number | null => {
-        if (!point1.x || !point1.y || !point2.x || !point2.y) {
-            logError(`Cannot calculate distance, one or more points are invalid. point1: ${point1}, point2: ${point2}`);
-            return null;
-        }
-
-        return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
-    }
-
     return (
         <div className="model">
             <model-viewer 
-                src={modelURL} 
+                src={MODEL_FILE_URL} 
                 ar-modes="webxr scene-viewer quick-look" 
                 camera-controls poster="poster.webp" 
                 shadow-intensity="1"

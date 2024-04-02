@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { logInfo } from '../logging';
-import React from 'react';
-import IAnnotation from '../interfaces/IAnnotation';
+import { IAnnotation } from '../interfaces/IAnnotation';
 
 interface AnnotationLabelProps {
     annotation: IAnnotation;
@@ -13,8 +12,17 @@ interface AnnotationLabelProps {
     dataNormalString: string;
 }
 
-export default function AnnotationLabel(props: AnnotationLabelProps) {
+export function AnnotationLabel(props: AnnotationLabelProps) {
     const [inputValue, setInputValue] = useState(props.annotation.name || '');
+
+    useEffect(() => {
+        if (props.isInEdit) {
+            const input = document.getElementById(`${props.annotation.id}-annotation-label-input`);
+            if (input) {
+                input.focus();
+            }
+        }
+    }, [props.isInEdit, props.annotation])
 
     const labelStyle = {
         backgroundColor: '#FF0000',
@@ -25,17 +33,6 @@ export default function AnnotationLabel(props: AnnotationLabelProps) {
         textDecoration: 'none'
     };
 
-    const handleClick = (event: React.MouseEvent) => {
-        event.stopPropagation();
-        props.handleClick(props.annotation.id);
-    }
-
-    const handleKeyUp = (event: React.KeyboardEvent) => {
-        if (event && event.key === 'Enter') {
-            handleSaveRename();
-        }
-    }
-
     const inputStyle = {
         background: 'inherit',
         color: 'white',
@@ -44,17 +41,28 @@ export default function AnnotationLabel(props: AnnotationLabelProps) {
         width: '8vh'
     }
 
-    const handleSaveRename = () => {
+    function handleClick (event: React.MouseEvent) {
+        event.stopPropagation();
+        props.handleClick(props.annotation.id);
+    }
+
+    function handleKeyUp (event: React.KeyboardEvent) {
+        if (event && event.key === 'Enter') {
+            handleSaveRename();
+        }
+    }
+
+    function handleSaveRename() {
         logInfo('Saving name');
         props.annotation.name = inputValue;
         props.handleRename(props.annotation);
     }
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
         setInputValue(event.target.value);
     }
 
-    const capitalizeFirstLetter = (string: string) => {
+    function capitalizeFirstLetter (string: string) {
         if (string && string.length > 0) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
@@ -94,15 +102,6 @@ export default function AnnotationLabel(props: AnnotationLabelProps) {
                 props.handleDeleteClick(e, props.annotation.id);
             }}
         >×</span>;
-
-    useEffect(() => {
-        if (props.isInEdit) {
-            const input = document.getElementById(`${props.annotation.id}-annotation-label-input`);
-            if (input) {
-                input.focus();
-            }
-        }
-    }, [props.isInEdit, props.annotation])
 
     return (
         <button

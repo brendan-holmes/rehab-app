@@ -1,4 +1,4 @@
-export default interface IJwt {
+export interface IJwt {
     email: string;
     exp: number;
     iat: number;

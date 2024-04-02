@@ -1,4 +1,4 @@
-export default interface IAnnotation {
+export interface IAnnotation {
     position: IPoint3d;
     normal: IPoint3d;
     id: string;

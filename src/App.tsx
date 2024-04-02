@@ -1,35 +1,36 @@
-import './App.css';
 import React, { useState } from 'react';
-import NavBar from './components/NavBar';
+import { NavBar } from './components/NavBar';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Model from './components/Model';
+import { Model } from './components/Model';
 import { isSignedIn as identityIsSignedSign } from './identity';
-import SignOut from './components/Identity/SignOutButton';
-import SignIn from './components/Identity/SignInButton';
-import Welcome from './components/Welcome';
-import ErrorBoundary from './components/ErrorBoundary';
-import SignInModal from './components/Identity/SignInModal';
+import { SignOut } from './components/Identity/SignOutButton';
+import { SignInButton } from './components/Identity/SignInButton';
+import { Welcome } from './components/Welcome';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { SignInModal } from './components/Identity/SignInModal';
 
-function App() {
+import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
+
+export function App() {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(identityIsSignedSign());
   const [showSignInModal, setShowSignInModal] = useState<boolean>(false);
 
-  const handleSignIn = () => {
+  function handleSignIn() {
     setIsSignedIn(true);
     setShowSignInModal(false);
   }
 
-  const handleSignOut = () => {
+  function handleSignOut() {
     setIsSignedIn(false);
     toast.dismiss();
   }
 
-  const handleSignInClick = () => {
+  function handleSignInClick() {
     setShowSignInModal(true);
   }
 
-  const handleCloseSignInModal = () => {
+  function handleCloseSignInModal() {
     setShowSignInModal(false);
   }
 
@@ -45,7 +46,7 @@ function App() {
     <div className="App">
       <NavBar>
         <li>Rehab</li>
-        <li>{ isSignedIn ? <SignOut onSignOut={handleSignOut} /> : <SignIn handleClick={handleSignInClick} /> }</li>
+        <li>{ isSignedIn ? <SignOut onSignOut={handleSignOut} /> : <SignInButton handleClick={handleSignInClick} /> }</li>
       </NavBar>
 
       {model}
@@ -64,5 +65,3 @@ function App() {
       </div>
   );
 }
-
-export default App;

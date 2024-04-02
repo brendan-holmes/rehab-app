@@ -1,5 +1,5 @@
 import React from 'react';
-import IAnnotation from '../interfaces/IAnnotation';
+import { IAnnotation } from '../interfaces/IAnnotation';
 
 interface IAnnotationProps {
     annotation: IAnnotation;
@@ -8,7 +8,7 @@ interface IAnnotationProps {
     handleAnnotationClick: (e: React.MouseEvent, id: string) => void;
 }
 
-export default function Annotation(props: IAnnotationProps) {
+export function Annotation(props: IAnnotationProps) {
     const annotationStyle = {
         background: '#D9594C',
         backgroundColor: '#04AA6D',
