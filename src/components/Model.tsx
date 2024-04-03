@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { list, remove, put } from '../apiClient';
 import { useEffect, useState, useRef } from 'react';
 import { TEMPORARY_ANNOTATION_ID } from './Annotation/annotationConstants';
+import { calculateDistance } from '../utils/pointUtils';
 
 export function Model () {
     const [annotationsData, setAnnotationsData] = useState<Annotation[]>([]);
@@ -45,8 +46,8 @@ export function Model () {
     }
 
     // Every annotation is first added as a temporary annotation,
-    // and then gets persisted once it has been named
-    function addTempAnnotation(dataPoint: Annotation) {
+    // and then gets persisted once it has been saved
+    function addTemporaryAnnotation(dataPoint: Annotation) {
         logInfo(`Setting temp annotation: ${dataPoint}`);
         dataPoint.id = TEMPORARY_ANNOTATION_ID; // todo: redesign
         dataPoint.timestamp = new Date().toUTCString();
@@ -87,7 +88,7 @@ export function Model () {
 
             logInfo(`[DeleteAnnotation] Delete clicked on annotation with id: ${id}`);
             if (id) {
-                if (isTempAnnotation(id)) {
+                if (id === TEMPORARY_ANNOTATION_ID) {
                     logInfo('[DeleteAnnotation] Removing temp annotation...');
                     setTempAnnotationData(null);
                     return;
@@ -119,13 +120,10 @@ export function Model () {
         }
     }
 
-    function isTempAnnotation(id: string) {
-        return tempAnnotationData && tempAnnotationData.id && id && (id === tempAnnotationData.id);
-    }
-
     function handleModelClick(event: React.MouseEvent) {
         const { clientX, clientY } = event;
 
+        // todo: this is a hack to prevent the click event from firing when dragging
         if (mouseDownCoords === null) {
             logInfo('mouseDownCoords is null, returning');
             return;
@@ -147,21 +145,12 @@ export function Model () {
                     setTempAnnotationData(null);
                     return;
                 }
-                addTempAnnotation(hit);
+                addTemporaryAnnotation(hit);
             } else {
                 handleBackgroundClick();
             }
         }
     };
-
-    function calculateDistance (point1: Point2d, point2: Point2d): number | null {
-        if (!point1.x || !point1.y || !point2.x || !point2.y) {
-            logError(`Cannot calculate distance, one or more points are invalid. point1: ${point1}, point2: ${point2}`);
-            return null;
-        }
-
-        return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
-    }
 
     const style = {
         height: '94vh',
