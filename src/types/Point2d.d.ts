@@ -1,4 +1,4 @@
-export interface IPoint2d {
+export interface Point2d {
     x: number;
     y: number;
 }

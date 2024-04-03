@@ -1,15 +1,14 @@
 import React from 'react';
-import { IAnnotation } from '../interfaces/IAnnotation';
+import { Annotation } from '../../types/Annotation';
+import { point3dToString } from '../../utils/pointUtils';
 
-interface IAnnotationProps {
-    annotation: IAnnotation;
-    dataPosition: string;
-    dataNormal: string;
+interface AnnotationMarkerProps {
+    annotation: Annotation;
     handleAnnotationClick: (e: React.MouseEvent, id: string) => void;
 }
 
-export function Annotation(props: IAnnotationProps) {
-    const annotationStyle = {
+export function AnnotationMarker(props: AnnotationMarkerProps) {
+    const annotationMarkerStyle = {
         background: '#D9594C',
         backgroundColor: '#04AA6D',
         border: 'none',
@@ -20,15 +19,15 @@ export function Annotation(props: IAnnotationProps) {
         borderRadius: '50%'
     };
 
-    return  (
+    return (
         <button
             id={props.annotation.id}
             className="view-button"
             slot={`hotspot-${props.annotation.id}`}
-            data-position={props.dataPosition}
-            data-normal={props.dataNormal}
-            style={annotationStyle}
+            data-position={point3dToString(props.annotation.position)}
+            data-normal={point3dToString(props.annotation.normal)}
+            style={annotationMarkerStyle}
             onClick={(e) => props.handleAnnotationClick(e, props.annotation.id)}
         />
-    )
+    );
 }

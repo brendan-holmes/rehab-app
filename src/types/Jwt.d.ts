@@ -1,4 +1,4 @@
-export interface IJwt {
+export interface Jwt {
     email: string;
     exp: number;
     iat: number;

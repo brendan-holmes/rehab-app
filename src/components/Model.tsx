@@ -1,21 +1,20 @@
 import React from 'react';
-import { Annotation } from './Annotation';
-import { IAnnotation } from '../interfaces/IAnnotation';
+import { AnnotationContainer } from './Annotation/AnnotationContainer';
+import { Annotation } from '../types/Annotation';
 import '@google/model-viewer/dist/model-viewer';
 import { logInfo, logError } from '../logging';
-import { AnnotationLabel } from './AnnotationLabel';
-import { IPoint2d } from '../interfaces/IPoint2d';
+import { Point2d } from '../types/Point2d';
 import { toast } from 'react-toastify';
 import { list, remove, put } from '../apiClient';
 import { useEffect, useState, useRef } from 'react';
 
 export function Model () {
-    const [annotationsData, setAnnotationsData] = useState<IAnnotation[]>([]);
-    const [tempAnnotationData, setTempAnnotationData] = useState<IAnnotation | null>(null);
+    const [annotationsData, setAnnotationsData] = useState<Annotation[]>([]);
+    const [tempAnnotationData, setTempAnnotationData] = useState<Annotation | null>(null);
 
     const [labelInEdit, setLabelInEdit] = useState<string>('');
     const modelRef1 = useRef<JSX.IntrinsicElements["model-viewer"]>();
-    const [mouseDownCoords, setMouseDownCoords] = useState<IPoint2d | null>(null);
+    const [mouseDownCoords, setMouseDownCoords] = useState<Point2d | null>(null);
 
     const MODEL_FILE_URL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
     
@@ -25,11 +24,6 @@ export function Model () {
         refreshData();
     }, []);
 
-    function getLabelDistanceToAnnotation(numberOfCharacters: number) {
-        const multiplier = 0.25;
-        return (13 + numberOfCharacters) * multiplier;
-    }
-
     // Used to determine if a click is a drag or a click
     function handleMouseDown (event: React.MouseEvent) {
         logInfo(`Mouse down event: Setting mouse down coords to: ${{x: event.clientX, y: event.clientY}}`);
@@ -38,7 +32,7 @@ export function Model () {
 
     function refreshData() {
         list()
-            .then((annotations: IAnnotation[]) => {
+            .then((annotations: Annotation[]) => {
                 logInfo(`Got data from api.list(): ${annotations}`, );
                 setAnnotationsData(annotations);
                 toast("Data refreshed");
@@ -57,7 +51,7 @@ export function Model () {
 
     // Every annotation is first added as a temporary annotation,
     // and then gets persisted once it has been named
-    function addTempAnnotation(dataPoint: IAnnotation) {
+    function addTempAnnotation(dataPoint: Annotation) {
         logInfo(`Setting temp annotation: ${dataPoint}`);
         dataPoint.id = 'temporary-id'; // todo: redesign
         dataPoint.timestamp = new Date().toUTCString();
@@ -65,7 +59,7 @@ export function Model () {
         setLabelInEdit(dataPoint.id);
     }
     
-    function persistAnnotation(annotationWithId: IAnnotation) {
+    function persistAnnotation(annotationWithId: Annotation) {
         if (!annotationWithId.id) {
             logError('Attempting to persist an annotation that doesn\'t have a id.');
             return;
@@ -107,13 +101,13 @@ export function Model () {
                 }
         
                 logInfo(`[DeleteAnnotation] deleting annotation with id: ${id}`);
-                const name = annotationsData.filter((a: IAnnotation) => a.id === id)[0].name || 'injury';
+                const name = annotationsData.filter((a: Annotation) => a.id === id)[0].name || 'injury';
                 if (!window.confirm(`Delete ${name}?`)) {
                     logInfo(`[DeleteAnnotation] Deletion cancelled by user with id: ${id}`);
                     return;
                 }
                 let newData;
-                setAnnotationsData((existingAnnotations: IAnnotation[]) => {
+                setAnnotationsData((existingAnnotations: Annotation[]) => {
                     logInfo(`[DeleteAnnotation] Existing annotations: ${existingAnnotations}`);
                     newData = existingAnnotations.filter(annotation => annotation.id !== id);
                     logInfo(`[DeleteAnnotation] Removed annotation with id: ${id}`);
@@ -166,16 +160,16 @@ export function Model () {
     };
 
 
-    function getDataPositionString (annotation: IAnnotation) {
-        if (!annotation || !annotation.position) {
-            logInfo('Annotation position is not defined in getDataPosition');
-            return '';
-        }
+    // function getDataPositionString (annotation: Annotation) {
+    //     if (!annotation || !annotation.position) {
+    //         logInfo('Annotation position is not defined in getDataPosition');
+    //         return '';
+    //     }
             
-        return `${annotation.position.x} ${annotation.position.y} ${annotation.position.z}`;
-    };
+    //     return `${annotation.position.x} ${annotation.position.y} ${annotation.position.z}`;
+    // };
 
-    function getDataPositionStringWithOffset(annotation: IAnnotation, offset = {x: 0, y: 0, z: 0}): string {
+    function getDataPositionStringWithOffset(annotation: Annotation, offset = {x: 0, y: 0, z: 0}): string {
         if (!annotation || !annotation.position) {
             logError('Annotation position is not defined in getDataPositionWithOffset');
             return '';
@@ -190,16 +184,9 @@ export function Model () {
           }`;
       };
     
-    function getDataNormalString (annotation: IAnnotation): string {
-        if (!annotation || !annotation.normal) {
-            logInfo('Annotation normal is not defined. Returning empty string in getDataNormalString');
-            return '';
-        }
+    
 
-        return `${annotation.normal.x} ${annotation.normal.y} ${annotation.normal.z}`;
-    };
-
-    function calculateDistance (point1: IPoint2d, point2: IPoint2d): number | null {
+    function calculateDistance (point1: Point2d, point2: Point2d): number | null {
         if (!point1.x || !point1.y || !point2.x || !point2.y) {
             logError(`Cannot calculate distance, one or more points are invalid. point1: ${point1}, point2: ${point2}`);
             return null;
@@ -217,67 +204,36 @@ export function Model () {
         backgroundPosition: '-19px -19px'
     };
 
-    const annotations = annotationsData ? 
-        annotationsData.map((annotation: IAnnotation, index: number) => {
+    const annotationComponents = annotationsData ? 
+        annotationsData.map((annotation: Annotation, index: number) => {
             if (annotation && annotation.id) {
                 return (
-                    <Annotation 
-                        key = {`${annotation.id}-annotation`}
-                        annotation = {annotation}
-                        dataPosition = {getDataPositionString(annotation)}
-                        dataNormal = {getDataNormalString(annotation)}
-                        handleAnnotationClick = {deleteAnnotation}
-                    />
-                )
-            } else {
-                return null;
-            }
-        })
-        : null;
-
-    const annotationLabels = annotationsData ? 
-        annotationsData.map((annotation: IAnnotation) => {
-            if (annotation && annotation.id) {
-                return (
-                    <AnnotationLabel 
+                    <AnnotationContainer 
                         key = {`${annotation.id}-annotation-label`}
                         annotation = {annotation}
-                        dataPositionString = {getDataPositionStringWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation?.name?.length || 0), y: 1, z: 0})}
-                        dataNormalString = {getDataNormalString(annotation)}
                         handleDeleteClick = {deleteAnnotation}
                         handleRename = {persistAnnotation}
                         handleClick = {handleLabelClick}
                         isInEdit = {labelInEdit === annotation.id}
+                        handleAnnotationClick={deleteAnnotation}
                     />
-                )
-            } else {
-                return null;
+                );
             }
         })
-        : null;
+        : [];
     
-    const tempAnnotation = tempAnnotationData && tempAnnotationData.id ? 
-        <Annotation 
-            key = {`${tempAnnotationData.id}-annotation`}
-            annotation = {tempAnnotationData}
-            dataPosition = {getDataPositionString(tempAnnotationData)}
-            dataNormal = {getDataNormalString(tempAnnotationData)}
-            handleAnnotationClick = {deleteAnnotation}
-        /> :
-        null;
-    
-    const tempAnnotationLabel = tempAnnotationData && tempAnnotationData.id ? 
-        <AnnotationLabel 
+    if (annotationComponents && tempAnnotationData && tempAnnotationData.id) {
+        annotationComponents.push(
+            <AnnotationContainer 
             key = {`${tempAnnotationData.id}-annotation-label`}
             annotation = {tempAnnotationData}
-            dataPositionString = {getDataPositionStringWithOffset(tempAnnotationData, {x:getLabelDistanceToAnnotation(tempAnnotationData?.name?.length || 0), y: 1, z: 0})}
-            dataNormalString = {getDataNormalString(tempAnnotationData)}
             handleDeleteClick = {deleteAnnotation}
             handleRename = {persistAnnotation}
             handleClick = {handleLabelClick}
+            handleAnnotationClick={deleteAnnotation}
             isInEdit = {labelInEdit === tempAnnotationData.id}
-        /> :
-        null;
+        />);
+    } 
 
     return (
         <div className="model">
@@ -298,10 +254,7 @@ export function Model () {
                 <div className="progress-bar hide" slot="progress-bar">
                     <div className="update-bar"></div>
                 </div>
-                {annotations}
-                {annotationLabels}
-                {tempAnnotation}
-                {tempAnnotationLabel}
+                {annotationComponents}
             </model-viewer>
         </div>
     );

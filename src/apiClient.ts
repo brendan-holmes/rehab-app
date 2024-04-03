@@ -1,8 +1,8 @@
 import { logInfo } from './logging';
 import { getJwt, parseJwt } from './identity';
 import { v4 as uuid } from 'uuid';
-import { IAnnotation } from './interfaces/IAnnotation';
-import { IJwt } from './interfaces/IJwt';
+import { Annotation } from './types/Annotation';
+import { Jwt } from './types/Jwt';
 
 interface IDynamoDBPayload {
     Item?: IDynamoDBItem;
@@ -19,7 +19,7 @@ interface IDynamoDBKey {
 }
 
 interface IDynamoDBListResponse {
-    Items: IAnnotation[];
+    Items: Annotation[];
 }
 
 async function dynamoDbOperation(operation: string, payload: IDynamoDBPayload = {}): Promise<Response> {
@@ -61,13 +61,13 @@ async function dynamoDbOperation(operation: string, payload: IDynamoDBPayload = 
     return await fetch(url, requestOptions);
 }
 
-export function put(data: IAnnotation, id: string): Promise<Response> {
+export function put(data: Annotation, id: string): Promise<Response> {
     const jwt = getJwt();
     if (!jwt) {
         return Promise.reject(new Error('Cannot add new item: Unauthorized'));
     }
 
-    const jwtDecoded: IJwt = parseJwt(jwt);
+    const jwtDecoded: Jwt = parseJwt(jwt);
     if (!jwtDecoded) {
         return Promise.reject(new Error('Cannot add new item: Unauthorized'));
     }
@@ -90,13 +90,13 @@ export function put(data: IAnnotation, id: string): Promise<Response> {
     }
 }
 
-export function list(): Promise<IAnnotation[]> {
+export function list(): Promise<Annotation[]> {
     const jwt = getJwt();
     if (!jwt) {
         throw new Error('Cannot get list: Unauthorized');
     }
 
-    return dynamoDbOperation('list').then((response): Promise<IAnnotation[]> => {
+    return dynamoDbOperation('list').then((response): Promise<Annotation[]> => {
         if (!response.ok) {
             throw new Error('Cannot get list');
         }

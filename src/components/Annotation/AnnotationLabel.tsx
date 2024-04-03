@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { logInfo } from '../logging';
-import { IAnnotation } from '../interfaces/IAnnotation';
+import { logInfo } from '../../logging';
+import { Annotation } from '../../types/Annotation';
+import { addPoint3ds, point3dToString } from '../../utils/pointUtils';
+import { Point3d } from '../../types/Point3d';
 
 interface AnnotationLabelProps {
-    annotation: IAnnotation;
+    annotation: Annotation;
     handleClick: (id: string) => void;
     handleDeleteClick: (event: React.MouseEvent, id: string) => void;
-    handleRename: (annotation: IAnnotation) => void;
+    handleRename: (annotation: Annotation) => void;
     isInEdit: boolean;
-    dataPositionString: string;
-    dataNormalString: string;
 }
 
 export function AnnotationLabel(props: AnnotationLabelProps) {
@@ -62,13 +62,27 @@ export function AnnotationLabel(props: AnnotationLabelProps) {
         setInputValue(event.target.value);
     }
 
+    // todo: move to utils
     function capitalizeFirstLetter (string: string) {
-        if (string && string.length > 0) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-        logInfo('Capitalize First Letter: input string is not valid: ', string);
-        return string;
-      }
+    if (string && string.length > 0) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    logInfo('Capitalize First Letter: input string is not valid: ', string);
+    return string;
+    }
+
+    function getLabelOffset(): Point3d {
+
+        // x offset is from the center of the annotation marker to the centre of the label
+        // What we really want to do is to make the label left justified with the annotation marker
+        const textLength = props.annotation.name?.length || 0;
+        const xOffSet = 3.25 + textLength * 0.25;
+        
+        // Make the label slightly above the annotation marker
+        const yOffSet = 1;
+
+        return { x: xOffSet, y: yOffSet, z: 0 };
+    }
 
     const labelText = <span className='annotation-label-text'>{capitalizeFirstLetter(props.annotation.name) || '' }</span>;
     const labelInput = 
@@ -108,8 +122,8 @@ export function AnnotationLabel(props: AnnotationLabelProps) {
             id = {`${props.annotation.id}-label`}
             className = "view-button annotation-label"
             slot = {`hotspot-${props.annotation.id}-label`}
-            data-position = {props.dataPositionString}
-            data-normal = {props.dataNormalString}
+            data-position = {point3dToString(addPoint3ds(props.annotation.position, getLabelOffset()))}
+            data-normal = {point3dToString(props.annotation.normal)}
             style = {labelStyle}
             onClick={handleClick}
             onKeyUp={handleKeyUp}

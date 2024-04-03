@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer';
 import { logInfo } from './logging';
-import { IJwt } from './interfaces/IJwt';
+import { Jwt } from './types/Jwt';
 
 export function getJwt(): string {
     // todo: use cookie
@@ -19,7 +19,7 @@ export function getJwt(): string {
     return '';
 }
 
-export function parseJwt (token: string): IJwt {
+export function parseJwt (token: string): Jwt {
     const jwt = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     return jwt;
 }
