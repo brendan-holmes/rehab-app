@@ -7,12 +7,12 @@ import { Point2d } from '../types/Point2d';
 import { toast } from 'react-toastify';
 import { list, remove, put } from '../apiClient';
 import { useEffect, useState, useRef } from 'react';
+import { TEMPORARY_ANNOTATION_ID } from './Annotation/annotationConstants';
 
 export function Model () {
     const [annotationsData, setAnnotationsData] = useState<Annotation[]>([]);
     const [tempAnnotationData, setTempAnnotationData] = useState<Annotation | null>(null);
 
-    const [labelInEdit, setLabelInEdit] = useState<string>('');
     const modelRef1 = useRef<JSX.IntrinsicElements["model-viewer"]>();
     const [mouseDownCoords, setMouseDownCoords] = useState<Point2d | null>(null);
 
@@ -42,21 +42,15 @@ export function Model () {
 
     function handleBackgroundClick() {
         setTempAnnotationData(null);
-        setLabelInEdit('');
-    }
-
-    function handleLabelClick(id: string) {
-        setLabelInEdit(id);
     }
 
     // Every annotation is first added as a temporary annotation,
     // and then gets persisted once it has been named
     function addTempAnnotation(dataPoint: Annotation) {
         logInfo(`Setting temp annotation: ${dataPoint}`);
-        dataPoint.id = 'temporary-id'; // todo: redesign
+        dataPoint.id = TEMPORARY_ANNOTATION_ID; // todo: redesign
         dataPoint.timestamp = new Date().toUTCString();
         setTempAnnotationData(dataPoint);
-        setLabelInEdit(dataPoint.id);
     }
     
     function persistAnnotation(annotationWithId: Annotation) {
@@ -82,7 +76,6 @@ export function Model () {
                 toast("Added injury");
             })
             .catch((error: Error) => toast(`An error occurred: ${error}`));
-        setLabelInEdit('');
         refreshData();
         setTempAnnotationData(null);
         return newData;
@@ -116,8 +109,11 @@ export function Model () {
                 });
                 remove(id)
                     .then((response: Response | null) => response?.json())
-                    .then(() => toast("[DeleteAnnotation] Deleted injury"))
-                    .catch((error: Error) => toast(`[DeleteAnnotation] An error occurred: ${error}`));
+                    .then(() => toast("Deleted injury"))
+                    .catch((error: Error) => {
+                        logInfo(`[DeleteAnnotation] An error occurred: ${error}`);
+                        toast(`Unable to delete`)
+                    });
                 return newData;
             }
         }
@@ -147,8 +143,7 @@ export function Model () {
         if (modelRef1.current) {
             let hit = modelRef1.current.positionAndNormalFromPoint(clientX, clientY);
             if (hit) {
-                if (labelInEdit) {
-                    setLabelInEdit('');
+                if (tempAnnotationData) {
                     setTempAnnotationData(null);
                     return;
                 }
@@ -158,33 +153,6 @@ export function Model () {
             }
         }
     };
-
-
-    // function getDataPositionString (annotation: Annotation) {
-    //     if (!annotation || !annotation.position) {
-    //         logInfo('Annotation position is not defined in getDataPosition');
-    //         return '';
-    //     }
-            
-    //     return `${annotation.position.x} ${annotation.position.y} ${annotation.position.z}`;
-    // };
-
-    function getDataPositionStringWithOffset(annotation: Annotation, offset = {x: 0, y: 0, z: 0}): string {
-        if (!annotation || !annotation.position) {
-            logError('Annotation position is not defined in getDataPositionWithOffset');
-            return '';
-        }
-
-        return `${
-            annotation.position.x !== null ? annotation.position.x + offset.x : 0
-          } ${
-            annotation.position.y !== null ? annotation.position.y + offset.y : 0
-          } ${
-            annotation.position.z !== null ? annotation.position.z + offset.z : 0
-          }`;
-      };
-    
-    
 
     function calculateDistance (point1: Point2d, point2: Point2d): number | null {
         if (!point1.x || !point1.y || !point2.x || !point2.y) {
@@ -205,34 +173,25 @@ export function Model () {
     };
 
     const annotationComponents = annotationsData ? 
-        annotationsData.map((annotation: Annotation, index: number) => {
-            if (annotation && annotation.id) {
-                return (
-                    <AnnotationContainer 
-                        key = {`${annotation.id}-annotation-label`}
-                        annotation = {annotation}
-                        handleDeleteClick = {deleteAnnotation}
-                        handleRename = {persistAnnotation}
-                        handleClick = {handleLabelClick}
-                        isInEdit = {labelInEdit === annotation.id}
-                        handleAnnotationClick={deleteAnnotation}
-                    />
-                );
-            }
-        })
+        annotationsData.map((annotation: Annotation, index: number) =>
+            annotation && annotation.id ? 
+                <AnnotationContainer 
+                    key = {`${annotation.id}-annotation-label`}
+                    annotation = {annotation}
+                    handleDeleteClick = {deleteAnnotation}
+                    handleRename = {persistAnnotation}
+                />
+                : null)
         : [];
     
     if (annotationComponents && tempAnnotationData && tempAnnotationData.id) {
         annotationComponents.push(
             <AnnotationContainer 
-            key = {`${tempAnnotationData.id}-annotation-label`}
-            annotation = {tempAnnotationData}
-            handleDeleteClick = {deleteAnnotation}
-            handleRename = {persistAnnotation}
-            handleClick = {handleLabelClick}
-            handleAnnotationClick={deleteAnnotation}
-            isInEdit = {labelInEdit === tempAnnotationData.id}
-        />);
+                key = {`${tempAnnotationData.id}-annotation-label`}
+                annotation = {tempAnnotationData}
+                handleDeleteClick = {deleteAnnotation}
+                handleRename = {persistAnnotation}
+            />);
     } 
 
     return (

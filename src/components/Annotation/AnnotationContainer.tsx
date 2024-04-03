@@ -6,20 +6,17 @@ import { AnnotationLabel } from './AnnotationLabel';
 interface AnnotationProps {
     annotation: Annotation;
 
-    // move to annotation label
-    handleClick: (id: string) => void;
-    handleAnnotationClick: (e: React.MouseEvent, id: string) => void;
+    // todo: move to annotation label
     handleDeleteClick: (event: React.MouseEvent, id: string) => void;
     handleRename: (annotation: Annotation) => void;
-    isInEdit: boolean; // move to state of annotation label
 }
 
 export function AnnotationContainer(props: AnnotationProps) {
 
     return  (
         <>
-            <AnnotationMarker annotation={props.annotation} handleAnnotationClick={props.handleAnnotationClick} />
-            <AnnotationLabel annotation={props.annotation} handleClick={props.handleClick} handleDeleteClick={props.handleDeleteClick} handleRename={props.handleRename} isInEdit={props.isInEdit} />
+            <AnnotationMarker annotation={props.annotation} />
+            <AnnotationLabel annotation={props.annotation} handleDeleteClick={props.handleDeleteClick} handleRename={props.handleRename} />
         </>
     )
 }

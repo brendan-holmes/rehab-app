@@ -4,7 +4,6 @@ import { point3dToString } from '../../utils/pointUtils';
 
 interface AnnotationMarkerProps {
     annotation: Annotation;
-    handleAnnotationClick: (e: React.MouseEvent, id: string) => void;
 }
 
 export function AnnotationMarker(props: AnnotationMarkerProps) {
@@ -27,7 +26,6 @@ export function AnnotationMarker(props: AnnotationMarkerProps) {
             data-position={point3dToString(props.annotation.position)}
             data-normal={point3dToString(props.annotation.normal)}
             style={annotationMarkerStyle}
-            onClick={(e) => props.handleAnnotationClick(e, props.annotation.id)}
         />
     );
 }
