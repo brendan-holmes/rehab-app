@@ -7,7 +7,7 @@ interface AnnotationProps {
     annotation: Annotation;
 
     // todo: move to annotation label
-    handleDeleteClick: (event: React.MouseEvent, id: string) => void;
+    handleDelete: (event: React.MouseEvent, id: string) => void;
     handleRename: (annotation: Annotation) => void;
 }
 
@@ -16,7 +16,7 @@ export function AnnotationContainer(props: AnnotationProps) {
     return  (
         <>
             <AnnotationMarker annotation={props.annotation} />
-            <AnnotationLabel annotation={props.annotation} handleDeleteClick={props.handleDeleteClick} handleRename={props.handleRename} />
+            <AnnotationLabel annotation={props.annotation} handleDelete={props.handleDelete} handleRename={props.handleRename} />
         </>
     )
 }

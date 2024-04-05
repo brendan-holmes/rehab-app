@@ -5,11 +5,11 @@ import { addPoint3ds, point3dToString } from '../../utils/pointUtils';
 import { Point3d } from '../../types/Point3d';
 import { capitalizeFirstLetter } from '../../utils/stringUtils';
 import { useOnClickOutside } from 'usehooks-ts';
-import { TEMPORARY_ANNOTATION_ID } from './annotationConstants';
+import { UNSAVED_ANNOTATION_ID } from './annotationConstants';
 
 interface AnnotationLabelProps {
     annotation: Annotation;
-    handleDeleteClick: (event: React.MouseEvent, id: string) => void;
+    handleDelete: (event: React.MouseEvent, id: string) => void;
     handleRename: (annotation: Annotation) => void;
 }
 
@@ -17,7 +17,7 @@ export function AnnotationLabel(props: AnnotationLabelProps) {
     const [inputValue, setInputValue] = useState(props.annotation.name || '');
 
     // todo: need to make it true for new labels but false for existing labels
-    const isNewAnnotation = props.annotation.id === TEMPORARY_ANNOTATION_ID;
+    const isNewAnnotation = props.annotation.id === UNSAVED_ANNOTATION_ID;
     const [isEditing, setIsEditing] = useState(isNewAnnotation);
 
     // Not working currently
@@ -123,7 +123,7 @@ export function AnnotationLabel(props: AnnotationLabelProps) {
             className="annotation-label-cross-button"
             onClick={(e) => {
                 e.stopPropagation();
-                props.handleDeleteClick(e, props.annotation.id);
+                props.handleDelete(e, props.annotation.id);
             }}
         >×</span>;
 

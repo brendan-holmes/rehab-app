@@ -1,1 +1,1 @@
-export const TEMPORARY_ANNOTATION_ID = 'temporary-annotation-id';
+export const UNSAVED_ANNOTATION_ID = 'unsaved-annotation-id';
