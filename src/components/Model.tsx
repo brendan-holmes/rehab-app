@@ -1,110 +1,166 @@
-import '@google/model-viewer/dist/model-viewer';
 import React from 'react';
-
+import { AnnotationContainer } from './Annotation/AnnotationContainer';
+import { Annotation } from '../types/Annotation';
+import '@google/model-viewer/dist/model-viewer';
 import { logInfo, logError } from '../logging';
-import Annotation from './Annotation';
-import IAnnotation from '../interfaces/IAnnotation';
-import AnnotationLabel from './AnnotationLabel';
-import IPoint2d from '../interfaces/IPoint2d';
+import { Point2d } from '../types/Point2d';
+import { toast } from 'react-toastify';
+import { list, remove, put } from '../apiClient';
+import { useEffect, useState, useRef } from 'react';
+import { UNSAVED_ANNOTATION_ID } from './Annotation/annotationConstants';
+import { calculateDistance } from '../utils/pointUtils';
 
-const { useState, useRef } = require('react');
+export function Model () {
+    const [annotationsData, setAnnotationsData] = useState<Annotation[]>([]);
 
-interface IModelProps {
-    annotations: IAnnotation[];
-    tempAnnotation: IAnnotation;
-    labelInEdit: string;
-    handleModelClick: (annotation: IAnnotation) => void;
-    handleBackgroundClick: () => void;
-    handleLabelClick: (id: string) => void;
-    handleRename: (annotation: IAnnotation) => void;
-    deleteDataById: (id: string) => void;
-}
+    const modelRef = useRef<JSX.IntrinsicElements["model-viewer"]>();
+    const [mouseDownCoords, setMouseDownCoords] = useState<Point2d | null>(null);
 
-export default function Model(props: IModelProps) {
-    const modelURL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
-    const modelRef1 = useRef();
-    const [mouseDownCoords, setMouseDownCords] = useState(null);
+    const MODEL_FILE_URL = 'https://rehab-app-brendan-holmes-net.s3.ap-southeast-2.amazonaws.com/human-body-model.glb';
 
-    const getLabelDistanceToAnnotation = (numberOfCharacters: number) => {
-        const multiplier = 0.25;
-        return (13 + numberOfCharacters) * multiplier;
+    useEffect(() => {
+        fetchAnnotationsData();
+    }, []);
+
+    function fetchAnnotationsData() {
+        list()
+            .then((annotations: Annotation[]) => {
+                logInfo(`Got data from api.list(): ${annotations}`, );
+                setAnnotationsData(annotations);
+            })
+            .catch((error: Error) => toast(`Unable to refresh data: ${error}`));
+        };
+
+    function removeUnsavedAnnotation() {
+        logInfo('Removing unsaved annotation...');
+        setAnnotationsData(annotationsData.filter((annotation: Annotation) => annotation.id !== UNSAVED_ANNOTATION_ID));
     }
 
-    const mouseDownToClickMaxDist = window.innerHeight * 0.01;
-
-    const handleMouseDown = (event: any) => {
-        logInfo('Mouse down event: Setting mouse down coords to: ', {x: event.clientX, y: event.clientY}.toString());
-        setMouseDownCords({x: event.clientX, y: event.clientY});
+    function handleBackgroundClick() {
+        removeUnsavedAnnotation();
     }
 
-    const calculateDistance = (point1: IPoint2d, point2: IPoint2d) => {
-        if (!point1.x || !point1.y || !point2.x || !point2.y) {
-            logError('Cannot calculate distance, one or more points are invalid. point1: ', point1.toString(), ', point2: ', point2.toString());
-        }
+    function addNewAnnotation(dataPoint: Annotation) {
+        logInfo(`Adding new annotation: ${dataPoint}`);
 
-        return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+        // Every new annotation first gets a temporary id and then gets a real id when saved
+        dataPoint.id = UNSAVED_ANNOTATION_ID;
+        dataPoint.timestamp = new Date().toUTCString();
+        setAnnotationsData([...annotationsData, dataPoint]);
     }
 
-    // todo: find specific event type
-    const handleModelClick = (event: any) => {
-        const { clientX, clientY } = event;
-
-        const mouseDownToClickDist = calculateDistance({x: clientX, y: clientY}, {x: mouseDownCoords.x, y: mouseDownCoords.y});
-        setMouseDownCords(null);
-        logInfo('distance: ', mouseDownToClickDist.toString());
-        logInfo('max distance: ', mouseDownToClickMaxDist.toString());
-        if ( mouseDownToClickDist > mouseDownToClickMaxDist) {
-            logInfo('clientX: ', clientX, ', clientY: ', ', mouseDownCoords.x: ', mouseDownCoords.x.toString(), ' , mouseDownCoords.y: ', mouseDownCoords.y.toString(), ' , distance: ', mouseDownToClickDist.toString());
-            logInfo('Click start and end point too far away.')
-            return;
-        }
-
-        if (modelRef1.current) {
-            let hit = modelRef1.current.positionAndNormalFromPoint(clientX, clientY);
-            if (hit) {
-                props.handleModelClick(hit);
-            } else {
-                props.handleBackgroundClick();
-            }
-        }
-    };
-
-    const handleDeleteClick = (event: any, id: string) => {
+    function deleteAnnotation (event: React.MouseEvent, id: string) {
         if (event) {
             event.stopPropagation();
 
-            logInfo("Delete clicked. id: ", id);
+            logInfo(`Delete clicked on annotation with id: ${id}`);
             if (id) {
-                props.deleteDataById(id);
+                if (id === UNSAVED_ANNOTATION_ID) {
+                    removeUnsavedAnnotation();
+                    return;
+                }
+        
+                logInfo(`Deleting annotation with id: ${id}`);
+                const name = annotationsData.filter((a: Annotation) => a.id === id)[0].name || 'injury';
+                if (!window.confirm(`Delete ${name}?`)) {
+                    logInfo(`Deletion cancelled by user with id: ${id}`);
+                    return;
+                }
+                let newData;
+                setAnnotationsData((existingAnnotations: Annotation[]) => {
+                    logInfo(`Existing annotations: ${existingAnnotations}`);
+                    newData = existingAnnotations.filter(annotation => annotation.id !== id);
+                    logInfo(`Removed annotation with id: ${id}`);
+                    logInfo(`New annotations: ${newData}`);
+                    return newData;
+                });
+                remove(id)
+                    .then((response: Response | null) => response?.json())
+                    .then(() => toast("Deleted injury"))
+                    .catch((error: Error) => {
+                        logInfo(`An error occurred while deleting annotation: ${error}`);
+                        toast(`Unable to delete`)
+                    });
+                return newData;
             }
         }
     }
 
-    const getDataPositionString = (annotation: IAnnotation) => {
-        if (!annotation || !annotation.position) {
-            logInfo('Annotation position is not defined in getDataPosition');
-            return '';
+    function persistAnnotation(annotation: Annotation) {
+        if (!annotation.id) {
+            logError('Attempting to persist an annotation that doesn\'t have a id.');
+            return;
         }
-            
-        return `${annotation.position.x} ${annotation.position.y} ${annotation.position.z}`;
+        if (!annotation.name) {
+            annotation.name = "Unnamed injury";
+        }
+        let newData;
+        logInfo('Created ID: ', annotation.id);
+    
+        put(annotation, annotation.id)
+            .then((response: Response) => response?.json())
+    
+            // todo
+            .then((responseJson: any) => {
+                logInfo(`Put data with api.put(). Response: ${responseJson}`);
+                if (responseJson.errorMessage) {
+                    throw new Error(responseJson.errorMessage)
+                }
+                toast("Added injury");
+            })
+            .catch((error: Error) => toast(`An error occurred: ${error}`));
+        fetchAnnotationsData();
+        removeUnsavedAnnotation();
+        return newData;
     };
 
-    const getDataPositionStringWithOffset = (annotation: IAnnotation, offset = {x: 0, y: 0, z: 0}): string => {
-        if (!annotation || !annotation.position) {
-            logInfo('Annotation position is not defined in getDataPositionWithOffset');
-            return '';
+    // Used to determine if a click is a drag or a click
+    function handleMouseDown (event: React.MouseEvent) {
+        logInfo(`Mouse down event. Setting mouse down coords to: ${{x: event.clientX, y: event.clientY}}`);
+        setMouseDownCoords({x: event.clientX, y: event.clientY});
+    }
+
+    function isDrag(clickCoords: Point2d): boolean | undefined {
+        const mouseDownToClickMaxDist = window.innerHeight * 0.01;
+
+        if (!mouseDownCoords) {
+            logInfo('mouseDownCoords is not defined, returning undefined');
+            return undefined;
         }
 
-        return `${annotation.position.x + offset.x} ${annotation.position.y + offset.y} ${annotation.position.z + offset.z}`;
-      };
-    
-    const getDataNormalString = (annotation: IAnnotation): string => {
-        if (!annotation || !annotation.normal) {
-            logInfo('Annotation normal is not defined. Returning empty string in getDataNormalString');
-            return '';
+        if (!clickCoords || !clickCoords.x || !clickCoords.y) {
+            logInfo('invalid click coordinates, returning drag=true');
+            return undefined;
+        }
+        const mouseDownToClickDist = calculateDistance({x: clickCoords.x, y: clickCoords.y}, {x: mouseDownCoords.x, y: mouseDownCoords.y});
+        setMouseDownCoords(null);
+        
+        logInfo(`clientX: ${clickCoords.x}, clientY: ${clickCoords.y}, mouseDownCoords.x: ${mouseDownCoords.x}, mouseDownCoords.y: ${mouseDownCoords.y} distance: ${mouseDownToClickDist}, max distance: ${mouseDownToClickMaxDist}`); 
+        if ( mouseDownToClickDist && (mouseDownToClickDist > mouseDownToClickMaxDist)) {
+            logInfo('Click is a drag');
+            return true;
+        }
+    }
+
+    function handleModelClick(event: React.MouseEvent) {
+        const { clientX, clientY } = event;
+
+        if (isDrag({x: clientX, y: clientY})) {
+            return;
         }
 
-        return `${annotation.normal.x} ${annotation.normal.y} ${annotation.normal.z}`;
+        if (modelRef.current) {
+            let hit = modelRef.current.positionAndNormalFromPoint(clientX, clientY);
+            if (hit) {
+                if (annotationsData.some((annotation: Annotation) => annotation.id === UNSAVED_ANNOTATION_ID)) {
+                    removeUnsavedAnnotation();
+                    return;
+                }
+                addNewAnnotation(hit);
+            } else {
+                handleBackgroundClick();
+            }
+        }
     };
 
     const style = {
@@ -116,81 +172,29 @@ export default function Model(props: IModelProps) {
         backgroundPosition: '-19px -19px'
     };
 
-    const annotations = props.annotations ? 
-        props.annotations.map((annotation, idx) => {
-            if (annotation && annotation.id) {
-                return (
-                    <Annotation 
-                        key = {`${annotation.id}-annotation`}
-                        annotation = {annotation}
-                        dataPosition = {getDataPositionString(annotation)}
-                        dataNormal = {getDataNormalString(annotation)}
-                        handleAnnotationClick = {handleDeleteClick}
-                    />
-                )
-            } else {
-                return null;
-            }
-        })
-        : null;
-
-    const annotationLabels = props.annotations ? 
-        props.annotations.map((annotation, idx) => {
-            if (annotation && annotation.id) {
-                return (
-                    <AnnotationLabel 
-                        key = {`${annotation.id}-annotation-label`}
-                        annotation = {annotation}
-                        dataPositionString = {getDataPositionStringWithOffset(annotation, {x:getLabelDistanceToAnnotation(annotation?.name?.length || 0), y: 1, z: 0})}
-                        dataNormalString = {getDataNormalString(annotation)}
-                        handleDeleteClick = {handleDeleteClick}
-                        handleRename = {props.handleRename}
-                        handleClick = {props.handleLabelClick}
-                        isInEdit = {props.labelInEdit === annotation.id}
-                    />
-                )
-            } else {
-                return null;
-            }
-        })
-        : null;
-    
-    const tempAnnotation = props.tempAnnotation && props.tempAnnotation.id ? 
-        <Annotation 
-            key = {`${props.tempAnnotation.id}-annotation`}
-            annotation = {props.tempAnnotation}
-            dataPosition = {getDataPositionString(props.tempAnnotation)}
-            dataNormal = {getDataNormalString(props.tempAnnotation)}
-            handleAnnotationClick = {handleDeleteClick}
-        /> :
-        null;
-    
-    const tempAnnotationLabel = props.tempAnnotation && props.tempAnnotation.id ? 
-        <AnnotationLabel 
-            key = {`${props.tempAnnotation.id}-annotation-label`}
-            annotation = {props.tempAnnotation}
-            dataPositionString = {getDataPositionStringWithOffset(props.tempAnnotation, {x:getLabelDistanceToAnnotation(props?.tempAnnotation?.name?.length || 0), y: 1, z: 0})}
-            dataNormalString = {getDataNormalString(props.tempAnnotation)}
-            handleDeleteClick = {handleDeleteClick}
-            handleRename = {props.handleRename}
-            handleClick = {props.handleLabelClick}
-            isInEdit = {props.labelInEdit === props.tempAnnotation.id}
-        /> :
-        null;
-        
+    const annotationComponents = annotationsData ? 
+        annotationsData.map((annotation: Annotation, index: number) =>
+            annotation && annotation.id ? 
+                <AnnotationContainer 
+                    key = {`${annotation.id}-annotation-label`}
+                    annotation = {annotation}
+                    handleDelete = {deleteAnnotation}
+                    handleRename = {persistAnnotation}
+                />
+                : null)
+        : [];
 
     return (
         <div className="model">
             <model-viewer 
-                src={modelURL} 
+                src={MODEL_FILE_URL} 
                 ar-modes="webxr scene-viewer quick-look" 
                 camera-controls poster="poster.webp" 
                 shadow-intensity="1"
                 onClick={handleModelClick}
                 onMouseDown={handleMouseDown}
-                // onMouseUp={handleMouseUp}
-                ref={(ref: any) => {
-                    modelRef1.current = ref;
+                ref={(ref: JSX.IntrinsicElements["model-viewer"]) => {
+                    modelRef.current = ref;
                 }}
                 style={style}
                 disable-zoom
@@ -199,11 +203,8 @@ export default function Model(props: IModelProps) {
                 <div className="progress-bar hide" slot="progress-bar">
                     <div className="update-bar"></div>
                 </div>
-                {annotations}
-                {annotationLabels}
-                {tempAnnotation}
-                {tempAnnotationLabel}
+                {annotationComponents}
             </model-viewer>
         </div>
-    )
+    );
 }

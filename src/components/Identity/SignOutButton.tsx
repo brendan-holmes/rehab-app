@@ -1,11 +1,11 @@
 import React from 'react';
 import { signOut } from '../../identity'
 
-interface ISignOutProps {
+interface ISignOutButtonProps {
     onSignOut: () => void;
 }
 
-export default function SignOut(props: ISignOutProps) {
+export function SignOut(props: ISignOutButtonProps) {
     const handleSignOut = () => {
         signOut();
         props.onSignOut();

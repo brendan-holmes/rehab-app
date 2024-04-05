@@ -1,9 +1,28 @@
 import { logInfo } from './logging';
 import { getJwt, parseJwt } from './identity';
 import { v4 as uuid } from 'uuid';
-import IAnnotation from './interfaces/IAnnotation';
+import { Annotation } from './types/Annotation';
+import { Jwt } from './types/Jwt';
 
-async function dynamoDbOperation(operation: string, payload: any = {}) {
+interface IDynamoDBPayload {
+    Item?: IDynamoDBItem;
+    Key?: IDynamoDBKey;
+}
+
+interface IDynamoDBItem {
+    id: string;
+    email: string;
+}
+
+interface IDynamoDBKey {
+    id: string;
+}
+
+interface IDynamoDBListResponse {
+    Items: Annotation[];
+}
+
+async function dynamoDbOperation(operation: string, payload: IDynamoDBPayload = {}): Promise<Response> {
     const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
     
     if (
@@ -12,8 +31,8 @@ async function dynamoDbOperation(operation: string, payload: any = {}) {
         (operation !== 'delete') &&
         (operation !== 'update')
         ) {
-            logInfo('Invalid dynamo operation.');
-        return null;
+            logInfo('Invalid dynamo operation');
+            return Promise.reject(new Error('Invalid dynamo operation'));
     }
     
     var headers = new Headers();
@@ -32,7 +51,7 @@ async function dynamoDbOperation(operation: string, payload: any = {}) {
     });
 
     // todo: use a more specific type for requestOptions
-    var requestOptions: any = {
+    var requestOptions: RequestInit = {
         method: 'POST',
         headers: headers,
         body: body,
@@ -42,16 +61,13 @@ async function dynamoDbOperation(operation: string, payload: any = {}) {
     return await fetch(url, requestOptions);
 }
 
-function put(data: IAnnotation[], id: string) {
-    // return Promise.reject(new Error('Not implemented'));
-
+export function put(data: Annotation, id: string): Promise<Response> {
     const jwt = getJwt();
     if (!jwt) {
         return Promise.reject(new Error('Cannot add new item: Unauthorized'));
     }
 
-    // todo: use a more specific type for jwtDecoded
-    const jwtDecoded: any = parseJwt(jwt);
+    const jwtDecoded: Jwt = parseJwt(jwt);
     if (!jwtDecoded) {
         return Promise.reject(new Error('Cannot add new item: Unauthorized'));
     }
@@ -67,7 +83,6 @@ function put(data: IAnnotation[], id: string) {
                 'id': uuid(),
                 'email': email
             },
-            
         }
         return dynamoDbOperation('create', payload);
     } else {
@@ -75,20 +90,26 @@ function put(data: IAnnotation[], id: string) {
     }
 }
 
-function list() {
-    // return Promise.reject(new Error('Not implemented'));
-
+export function list(): Promise<Annotation[]> {
     const jwt = getJwt();
     if (!jwt) {
-        return Promise.reject(new Error('Cannot get list: Unauthorized'));
+        throw new Error('Cannot get list: Unauthorized');
     }
 
-    return dynamoDbOperation('list');
+    return dynamoDbOperation('list').then((response): Promise<Annotation[]> => {
+        if (!response.ok) {
+            throw new Error('Cannot get list');
+        }
+
+        return response.json().then((data: IDynamoDBListResponse) => {
+            return data.Items;
+        });
+    }).catch((error) => {
+        throw new Error(`Cannot get list: ${error}`);
+    });
 }
 
-function remove(id: string) {
-    // return Promise.reject(new Error('Not implemented'));
-    
+export function remove(id: string): Promise<Response> {
     const jwt = getJwt();
     if (!jwt) {
         return Promise.reject(new Error('Cannot remove item: Unauthorized'));
@@ -103,5 +124,3 @@ function remove(id: string) {
         return Promise.reject(new Error('Cannot remove'));
     }
 }
-
-export { put, list, remove };

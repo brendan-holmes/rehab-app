@@ -1,6 +1,6 @@
-export default interface IAnnotation {
-    position: IPoint3d;
-    normal: IPoint3d;
+export interface Annotation {
+    position: Point3d;
+    normal: Point3d;
     id: string;
     name: string;
     timestamp: string;

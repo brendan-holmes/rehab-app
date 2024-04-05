@@ -1,5 +1,5 @@
 // Get a nicely formatted string from a Date object
-const formatDate = (date: Date) => {
+export function formatDate(date: Date): string {
     if (!date) {
         return "";
     }
@@ -28,5 +28,3 @@ const formatDate = (date: Date) => {
         return `${Math.round(years)}y ago`;
     }
 }
-
-export { formatDate };
