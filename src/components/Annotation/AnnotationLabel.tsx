@@ -131,7 +131,7 @@ export function AnnotationLabel(props: AnnotationLabelProps) {
         <button
             ref = {ref}
             id = {`${props.annotation.id}-label`}
-            className = "view-button annotation-label"
+            className = 'view-button annotation-label'
             slot = {`hotspot-${props.annotation.id}-label`}
             data-position = {point3dToString(addPoint3ds(props.annotation.position, getLabelOffset()))}
             data-normal = {point3dToString(props.annotation.normal)}
