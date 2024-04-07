@@ -163,15 +163,6 @@ export function Model () {
         }
     };
 
-    const style = {
-        height: '94vh',
-        width: '100vw',
-        background: 'white',
-        backgroundImage: 'radial-gradient(grey 1px, transparent 0)',
-        backgroundSize: '40px 40px',
-        backgroundPosition: '-19px -19px'
-    };
-
     const annotationComponents = annotationsData ? 
         annotationsData.map((annotation: Annotation, index: number) =>
             annotation && annotation.id ? 
@@ -184,9 +175,21 @@ export function Model () {
                 : null)
         : [];
 
+    // todo: implement style using Tailwind CSS (not working for some reason)
+    const style = {
+        height: '94vh',
+        width: '90vw',
+        background: 'white',
+        backgroundImage: 'radial-gradient(grey 1px, transparent 0)',
+        backgroundSize: '40px 40px',
+        backgroundPosition: '-19px -19px'
+    };
+
     return (
         <div className="model">
             <model-viewer 
+                className="h-[94vh] w-screen bg-white"
+                style={style}
                 src={MODEL_FILE_URL} 
                 ar-modes="webxr scene-viewer quick-look" 
                 camera-controls poster="poster.webp" 
@@ -196,7 +199,6 @@ export function Model () {
                 ref={(ref: JSX.IntrinsicElements["model-viewer"]) => {
                     modelRef.current = ref;
                 }}
-                style={style}
                 disable-zoom
                 disable-pan
                 >

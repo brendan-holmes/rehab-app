@@ -7,7 +7,7 @@ interface INavbarProps {
 export const NavBar = (props: INavbarProps) => {
 
     return (
-        <ul className='NavBar'>
+        <ul className='p-0 m-0 flex flex-row flex-wrap items-center h-[6vh] justify-between bg-black'>
             {props.children}
         </ul>
     );

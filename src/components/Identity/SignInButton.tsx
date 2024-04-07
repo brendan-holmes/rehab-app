@@ -10,6 +10,9 @@ export function SignInButton(props: ISignInButtonProps) {
     }
 
     return (
-        <button onClick={handleSignIn}>Sign in</button>
+        <button 
+            className='hover:cursor-pointer'
+            onClick={handleSignIn}
+            >Sign in</button>
     )
 }

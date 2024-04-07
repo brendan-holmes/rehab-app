@@ -3,16 +3,18 @@ import { SignInWithGoogle } from './SignInWithGoogle';
 import { Modal } from '../Modal';
 
 interface ISignInModalProps {
-    handleClose: () => void;
-    handleSignIn: () => void;
+    close: () => void;
+    signIn: () => void;
 }
 
 export function SignInModal(props: ISignInModalProps) {
 
     // todo: don't show modal SignInWithGoogle until everything has loaded
     return (
-        <Modal handleClose={props.handleClose}>
-          <SignInWithGoogle handleSignIn={props.handleSignIn} />
+
+        // todo: replace modal with MUI Dialog - https://mui.com/material-ui/react-dialog/ 
+        <Modal closeModal={props.close}>
+          <SignInWithGoogle handleSignIn={props.signIn} />
           <p>
             Sign in with Google to get started
           </p>

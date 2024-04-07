@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import { NavBar } from './components/NavBar';
+import { NavBar } from './components/Navbar/NavBar';
+import { NavBarItem } from './components/Navbar/NavBarItem';
 import { ToastContainer, toast } from 'react-toastify';
 import { Model } from './components/Model';
 import { isSignedIn as identityIsSignedSign } from './identity';
 import { SignOut } from './components/Identity/SignOutButton';
 import { SignInButton } from './components/Identity/SignInButton';
-import { Welcome } from './components/Welcome';
+import { Landing } from './components/Landing';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { SignInModal } from './components/Identity/SignInModal';
 
 import 'react-toastify/dist/ReactToastify.css';
-import './App.css';
 
 export function App() {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(identityIsSignedSign());
   const [showSignInModal, setShowSignInModal] = useState<boolean>(false);
 
-  function handleSignIn() {
+  function signIn() {
     setIsSignedIn(true);
     setShowSignInModal(false);
   }
@@ -30,7 +30,7 @@ export function App() {
     setShowSignInModal(true);
   }
 
-  function handleCloseSignInModal() {
+  function closeSignInModal() {
     setShowSignInModal(false);
   }
 
@@ -43,21 +43,21 @@ export function App() {
     null;
 
   return (
-    <div className="App">
+    <div className="box-border">
       <NavBar>
-        <li>Rehab</li>
-        <li>{ isSignedIn ? <SignOut onSignOut={handleSignOut} /> : <SignInButton handleClick={handleSignInClick} /> }</li>
+        <NavBarItem>Rehab</NavBarItem>
+        <NavBarItem>{ isSignedIn ? <SignOut onSignOut={handleSignOut} /> : <SignInButton handleClick={handleSignInClick} /> }</NavBarItem>
       </NavBar>
 
       {model}
 
       {showSignInModal ? 
-        <SignInModal handleSignIn={handleSignIn} handleClose={handleCloseSignInModal}/> :
+        <SignInModal signIn={signIn} close={closeSignInModal}/> :
         null
       }
 
       {isSignedIn ? null : 
-        <Welcome />
+        <Landing />
       }
     
       <ToastContainer />
