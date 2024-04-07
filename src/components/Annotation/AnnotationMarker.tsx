@@ -7,25 +7,14 @@ interface AnnotationMarkerProps {
 }
 
 export function AnnotationMarker(props: AnnotationMarkerProps) {
-    const annotationMarkerStyle = {
-        background: '#D9594C',
-        backgroundColor: '#04AA6D',
-        border: 'none',
-        color: 'white',
-        padding: '10px',
-        textDecoration: 'none',
-        margin: '4px 2px',
-        borderRadius: '50%'
-    };
 
     return (
         <button
             id={props.annotation.id}
-            className="view-button"
+            className="view-button bg-green-600 border-none p-2 rounded-full"
             slot={`hotspot-${props.annotation.id}`}
             data-position={point3dToString(props.annotation.position)}
             data-normal={point3dToString(props.annotation.normal)}
-            style={annotationMarkerStyle}
         />
     );
 }

@@ -77,29 +77,11 @@ export function AnnotationLabel(props: AnnotationLabelProps) {
         return { x: xOffSet, y: yOffSet, z: 0 };
     }
 
-    const labelStyle = {
-        backgroundColor: '#FF0000',
-        background: '#D9594C',
-        border: 'none',
-        color: 'white',
-        padding: '0.5vh 1vh',
-        textDecoration: 'none'
-    };
-
-    const inputStyle = {
-        background: 'inherit',
-        color: 'white',
-        border: 'None',
-        zIndex: 999,
-        width: '8vh'
-    }
-
     const labelText = <span className='annotation-label-text'>{capitalizeFirstLetter(props.annotation.name) || '' }</span>;
     const labelInput = 
         <span>
             <input 
-                className='annotation-label-text'
-                style={inputStyle} 
+                className='annotation-label-text bg-inherit text-white w-40 z-50'
                 placeholder='Injury name'
                 onChange={handleInputChange}
                 value={inputValue}
@@ -108,9 +90,9 @@ export function AnnotationLabel(props: AnnotationLabelProps) {
         </span>;
     const text = isEditing ? labelInput: labelText;
 
-    const tick = isEditing ? 
+    const saveIcon = isEditing ? 
         <span 
-            className="annotation-label-save-button" 
+            className="float-right p-5 ml-2 h-4" 
             onClick={(e) => {
                 e.stopPropagation();
                 handleSaveRename();
@@ -120,7 +102,7 @@ export function AnnotationLabel(props: AnnotationLabelProps) {
 
     const cross = isEditing ? null :
         <span 
-            className="annotation-label-cross-button"
+            className="font-xl float-right ml-2"
             onClick={(e) => {
                 e.stopPropagation();
                 props.handleDelete(e, props.annotation.id);
@@ -131,16 +113,15 @@ export function AnnotationLabel(props: AnnotationLabelProps) {
         <button
             ref = {ref}
             id = {`${props.annotation.id}-label`}
-            className = 'view-button annotation-label'
+            className = 'bg-red-500 text-white px-4 py-2 no-underline bg-none text-sm flex items-center justify-center'
             slot = {`hotspot-${props.annotation.id}-label`}
             data-position = {point3dToString(addPoint3ds(props.annotation.position, getLabelOffset()))}
             data-normal = {point3dToString(props.annotation.normal)}
-            style = {labelStyle}
             onKeyUp={handleKeyUp}
             onClick={handleLabelClick}
         >
             {text}
-            {tick}
+            {saveIcon}
             {cross}
         </button>
     )}
