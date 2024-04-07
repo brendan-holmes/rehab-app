@@ -9,10 +9,11 @@
       "jsx": "react",
       "moduleResolution": "node",
       "lib": [
-        "es6",
-        "dom"
+        "esnext",
+        "dom",
+        "dom.iterable"
       ],
-      "target": "es5",
+      "target": "ESNEXT",
       "allowJs": true,
       "skipLibCheck": true,
       "esModuleInterop": true,
@@ -23,6 +24,7 @@
       "isolatedModules": true,
       "noEmit": true,
       "strictNullChecks": true,
+      "types": ["vite/client"]
     },
     "include": [
       "src/**/*"
