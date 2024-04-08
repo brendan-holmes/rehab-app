@@ -1,5 +1,5 @@
 import { logInfo } from './logging';
-import { getJwt, parseJwt } from './identity';
+import { getJwt, parseJwt } from './components/Identity/identityActions';
 import { v4 as uuid } from 'uuid';
 import { Annotation } from './types/Annotation';
 import { Jwt } from './types/Jwt';
