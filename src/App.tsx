@@ -38,7 +38,12 @@ export function App() {
         <Landing />
       }
     
-      <ToastContainer />
+      <ToastContainer 
+        hideProgressBar={true}
+        pauseOnHover 
+        position="bottom-left" 
+        pauseOnFocusLoss={false} 
+      />
       
       </div>
   );
