@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer';
-import { logInfo } from './logging';
-import { Jwt } from './types/Jwt';
+import { logInfo } from '../../logging';
+import { Jwt } from '../../types/Jwt';
 
 export function getJwt(): string {
     // todo: use cookie

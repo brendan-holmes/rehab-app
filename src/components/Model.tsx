@@ -177,8 +177,8 @@ export function Model () {
 
     // todo: implement style using Tailwind CSS (not working for some reason)
     const style = {
-        height: '94vh',
-        width: '90vw',
+        height: '90vh',
+        width: '100vw',
         background: 'white',
         backgroundImage: 'radial-gradient(grey 1px, transparent 0)',
         backgroundSize: '40px 40px',
@@ -188,7 +188,7 @@ export function Model () {
     return (
         <div className="model">
             <model-viewer 
-                className="h-[94vh] w-screen bg-white"
+                // className="h-[90vh] w-screen bg-white"
                 style={style}
                 src={MODEL_FILE_URL} 
                 ar-modes="webxr scene-viewer quick-look" 
