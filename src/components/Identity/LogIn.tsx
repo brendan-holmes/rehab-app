@@ -48,6 +48,7 @@ export function LogIn(props: LogInProps) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
+        className="min-h-100 min-w-100"
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           Sign In
@@ -67,6 +68,11 @@ export function LogIn(props: LogInProps) {
         <DialogContent dividers>
           <Typography gutterBottom>
             <SignInWithGoogle handleSignIn={handleSignIn}/>
+          </Typography>
+          <Typography gutterBottom>
+            Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text 
+            Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text 
+            Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text 
           </Typography>
         </DialogContent>
       </BootstrapDialog>

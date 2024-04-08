@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { NavBar } from './components/Navbar/NavBar';
-import { NavBarItem } from './components/Navbar/NavBarItem';
+import { NavBar } from './components/NavBar';
 import { ToastContainer, toast } from 'react-toastify';
 import { Model } from './components/Model';
 import { isSignedIn as identityIsSignedSign } from './components/Identity/identityActions';
-import { LogIn } from './components/Identity/LogIn';
 import { Landing } from './components/Landing';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
@@ -32,12 +30,7 @@ export function App() {
 
   return (
     <div className="box-border">
-      <NavBar>
-        <NavBarItem>Rehab</NavBarItem>
-        <NavBarItem>
-          <LogIn handleLogIn={logIn} handleLogOut={logOut} isAuthenticated={isAuthenticated}/>
-        </NavBarItem>
-      </NavBar>
+      <NavBar handleLogIn={logIn} handleLogOut={logOut} isAuthenticated={isAuthenticated} />
 
       {model}
 
