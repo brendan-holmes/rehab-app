@@ -2,41 +2,28 @@ import React, { useState } from 'react';
 import { NavBar } from './components/NavBar';
 import { ToastContainer, toast } from 'react-toastify';
 import { Model } from './components/Model';
-import { isSignedIn as identityIsSignedSign } from './components/Identity/identityActions';
 import { Landing } from './components/Landing';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { useAuth0 } from "@auth0/auth0-react";
 
 import 'react-toastify/dist/ReactToastify.css';
 
 export function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(identityIsSignedSign());
+  const { isAuthenticated, isLoading } = useAuth0();
 
-  function logIn() {
-    setIsAuthenticated(true);
-  }
-
-  function logOut() {
-    setIsAuthenticated(false);
-    toast.dismiss();
-  }
-
-  // React is not re-evaluating isSignedIn(), might need to trigger it 
-  // manually or link it to a prop
   const model = isAuthenticated ? 
     <ErrorBoundary errorMessage={"Unable to load model"}>
       <Model />
     </ErrorBoundary> :
-    null;
+    isLoading ? 
+      <div>Loading...</div> :
+      <Landing />;
 
   return (
     <div className="box-border">
-      <NavBar handleLogIn={logIn} handleLogOut={logOut} isAuthenticated={isAuthenticated} />
+      <NavBar />
 
       {model}
-
-      {isAuthenticated ? null : 
-        <Landing />
-      }
     
       <ToastContainer 
         hideProgressBar={true}
