@@ -1,8 +1,7 @@
 import { logInfo } from './logging';
-import { getJwt, parseJwt } from './components/Identity/identityActions';
 import { v4 as uuid } from 'uuid';
 import { Annotation } from './types/Annotation';
-import { Jwt } from './types/Jwt';
+import { IdToken } from '@auth0/auth0-spa-js';
 
 interface IDynamoDBPayload {
     Item?: IDynamoDBItem;
@@ -22,7 +21,8 @@ interface IDynamoDBListResponse {
     Items: Annotation[];
 }
 
-async function dynamoDbOperation(operation: string, payload: IDynamoDBPayload = {}): Promise<Response> {
+async function  dynamoDbOperation(idToken: IdToken, operation: string, payload: IDynamoDBPayload = {}): Promise<Response> {
+    
     const url = 'https://qqznn893v8.execute-api.ap-southeast-2.amazonaws.com/beta';
     
     if (
@@ -37,17 +37,12 @@ async function dynamoDbOperation(operation: string, payload: IDynamoDBPayload = 
     
     var headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    
-    const jwt = getJwt();
-    if (!jwt) {
-        return Promise.reject(new Error('Unauthorized'));
-    }
 
     var body = JSON.stringify({
         'operation': operation,
         'tableName': 'rehab-app',
         'payload': payload,
-        'jwt': jwt
+        'jwt': idToken.__raw
     });
 
     // todo: use a more specific type for requestOptions
@@ -61,19 +56,10 @@ async function dynamoDbOperation(operation: string, payload: IDynamoDBPayload = 
     return await fetch(url, requestOptions);
 }
 
-export function put(data: Annotation, id: string): Promise<Response> {
-    const jwt = getJwt();
-    if (!jwt) {
-        return Promise.reject(new Error('Cannot add new item: Unauthorized'));
-    }
+export function put(idToken: IdToken, data: Annotation, id: string): Promise<Response> {
 
-    const jwtDecoded: Jwt = parseJwt(jwt);
-    if (!jwtDecoded) {
-        return Promise.reject(new Error('Cannot add new item: Unauthorized'));
-    }
-    const email = jwtDecoded.email;
-    if (!email) {
-        return Promise.reject(new Error('Cannot add new item: Unauthorized'));
+    if (idToken.email === undefined) {
+        throw new Error('idToken is undefined');
     }
 
     if (data && id) {
@@ -81,22 +67,17 @@ export function put(data: Annotation, id: string): Promise<Response> {
             'Item': {
                 ...data,
                 'id': uuid(),
-                'email': email
-            },
+                'email': idToken.email
+            }
         }
-        return dynamoDbOperation('create', payload);
+        return dynamoDbOperation(idToken, 'create', payload);
     } else {
         return Promise.reject(new Error('Cannot add new item'));
     }
 }
 
-export function list(): Promise<Annotation[]> {
-    const jwt = getJwt();
-    if (!jwt) {
-        throw new Error('Cannot get list: Unauthorized');
-    }
-
-    return dynamoDbOperation('list').then((response): Promise<Annotation[]> => {
+export function list(idToken: IdToken): Promise<Annotation[]> {
+    return dynamoDbOperation(idToken, 'list').then((response): Promise<Annotation[]> => {
         if (!response.ok) {
             throw new Error('Cannot get list');
         }
@@ -109,17 +90,12 @@ export function list(): Promise<Annotation[]> {
     });
 }
 
-export function remove(id: string): Promise<Response> {
-    const jwt = getJwt();
-    if (!jwt) {
-        return Promise.reject(new Error('Cannot remove item: Unauthorized'));
-    }
-
+export function remove(idToken: IdToken, id: string): Promise<Response> {
     if (id) {
         const payload = {
             'Key': { 'id': id }
         }
-        return dynamoDbOperation('delete', payload);    
+        return dynamoDbOperation(idToken, 'delete', payload);    
     } else {
         return Promise.reject(new Error('Cannot remove'));
     }

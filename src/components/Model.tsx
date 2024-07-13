@@ -9,8 +9,10 @@ import { list, remove, put } from '../apiClient';
 import { useEffect, useState, useRef } from 'react';
 import { UNSAVED_ANNOTATION_ID } from './Annotation/annotationConstants';
 import { calculateDistance } from '../utils/pointUtils';
+import { useAuth0 } from "@auth0/auth0-react";
 
 export function Model () {
+    const { getIdTokenClaims } = useAuth0();
     const [annotationsData, setAnnotationsData] = useState<Annotation[]>([]);
 
     const modelRef = useRef<JSX.IntrinsicElements["model-viewer"]>();
@@ -22,9 +24,18 @@ export function Model () {
         fetchAnnotationsData();
     }, []);
 
-    function fetchAnnotationsData() {
-        list()
+    async function fetchAnnotationsData() {
+        const claims = await getIdTokenClaims();
+        if (claims === undefined) {
+            throw new Error("Unable to get id token claims");
+        }
+        list(claims)
             .then((annotations: Annotation[]) => {
+                
+                if (!annotations) {
+                    throw Error("Unknown error");
+                }
+
                 logInfo(`Got data from api.list(): ${annotations}`, );
                 setAnnotationsData(annotations);
             })
@@ -49,7 +60,7 @@ export function Model () {
         setAnnotationsData([...annotationsData, dataPoint]);
     }
 
-    function deleteAnnotation (event: React.MouseEvent, id: string) {
+    async function deleteAnnotation (event: React.MouseEvent, id: string) {
         if (event) {
             event.stopPropagation();
 
@@ -74,7 +85,12 @@ export function Model () {
                     logInfo(`New annotations: ${newData}`);
                     return newData;
                 });
-                remove(id)
+
+                const claims = await getIdTokenClaims();
+                if (claims === undefined) {
+                    throw new Error("Unable to get id token claims");
+                }
+                remove(claims, id)
                     .then((response: Response | null) => response?.json())
                     .then(() => toast("Deleted injury"))
                     .catch((error: Error) => {
@@ -86,7 +102,7 @@ export function Model () {
         }
     }
 
-    function persistAnnotation(annotation: Annotation) {
+    async function persistAnnotation(annotation: Annotation) {
         if (!annotation.id) {
             logError('Attempting to persist an annotation that doesn\'t have a id.');
             return;
@@ -96,8 +112,12 @@ export function Model () {
         }
         let newData;
         logInfo('Created ID: ', annotation.id);
-    
-        put(annotation, annotation.id)
+
+        const claims = await getIdTokenClaims();
+        if (claims === undefined) {
+            throw new Error("Unable to get id token claims");
+        }
+        put(claims, annotation, annotation.id)
             .then((response: Response) => response?.json())
     
             // todo
