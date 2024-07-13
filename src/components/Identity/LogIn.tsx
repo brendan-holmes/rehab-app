@@ -66,10 +66,10 @@ export function LogIn(props: LogInProps) {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-          <Typography gutterBottom>
+          <Typography gutterBottom component={'span'} variant={'body2'}>
             <SignInWithGoogle handleSignIn={handleSignIn}/>
           </Typography>
-          <Typography gutterBottom>
+          <Typography gutterBottom component={'span'} variant={'body2'}>
             Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text 
             Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text 
             Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text Placeholder text 
